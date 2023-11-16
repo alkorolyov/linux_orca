@@ -1,12 +1,12 @@
 # linux_orca
 Installation of orca in Linux
 
-ORCA install
+1) Download from ORCA forum and copy it to the `/tmp`
+`https://orcaforum.kofo.mpg.de/app.php/dlext/?view=detail&df_id=180`
 
-download `https://orcaforum.kofo.mpg.de/app.php/dlext/?view=detail&df_id=180`
-copy it to `/tmp`
-download `install.sh` and `orcainit` from this repository in the user home folder
+2) download `install.sh` and `orcainit` from this repository in the user home folder
+   
 ```
 sudo bash install.sh
-source ~/orcainit >> ~/.bashrc
+echo "source ~/orcainit" >> ~/.bashrc
 ```
