@@ -18,10 +18,12 @@ cd openmpi-4.1.1
 mkdir -p /opt/orca-5.0.3
 make install
 
+# extract orca
 cd /opt
 tar xvf /tmp/orca_5_0_3*.tar.xz
 mv orca_5_0_3* orca-5.0.3/orca
 
+# add to path
 ORCA_PATH="/opt/orca-5.0.3"
 export PATH="$ORCA_PATH/orca:$PATH"; export LD_LIBRARY_PATH="$ORCA_PATH/orca:$LD_LIBRARY_PATH"
 export PATH="$ORCA_PATH/openmpi-4.1.1/bin:$PATH"; export LD_LIBRARY_PATH="$ORCA_PATH/openmpi-4.1.1/lib:$LD_LIBRARY_PATH"
