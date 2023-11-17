@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Number of times to run the script
+num_runs=5
+
+# Array to store individual run times
+declare -a run_times
+
+# Run the script multiple times
+for ((i=1; i<=$num_runs; i++)); do
+    start_time=$(date +%s.%N)
+    eval "$1"  # Replace with the actual command to run your script
+    end_time=$(date +%s.%N)
+
+    # Calculate the run time in seconds
+    run_time=$(echo "$end_time - $start_time" | bc)
+
+    # Store the run time in the array
+    run_times+=($run_time)
+done
+
+# Calculate the average time
+total_time=0
+for time in "${run_times[@]}"; do
+    total_time=$(echo "$total_time + $time" | bc)
+done
+average_time=$(echo "scale=4; $total_time / $num_runs" | bc)
+
+# Calculate the deviation
+sum_squared_diff=0
+for time in "${run_times[@]}"; do
+    diff=$(echo "$time - $average_time" | bc)
+    sum_squared_diff=$(echo "$sum_squared_diff + ($diff * $diff)" | bc)
+done
+deviation=$(echo "scale=4; sqrt($sum_squared_diff / $num_runs)" | bc)
+
+echo "$1" > timing.log
+echo "=============================================================="  >> timing.log
+echo "Time average of $num_runs runs: $average_time ± $deviation sec"  >> timing.log
+echo "=============================================================="  >> timing.log
