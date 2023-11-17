@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # setup timing script
+mkdir ~/bin
 cp timing ~/bin
 chmod +x ~/bin/timing
-echo "export PATH=:~/bin:$PATH" >> ~/.bashrc
+export PATH=:~/bin:$PATH
+echo "export PATH=:$PATH:~/bin:" >> ~/.bashrc

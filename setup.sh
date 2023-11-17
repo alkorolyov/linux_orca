@@ -1,7 +1,10 @@
 env_name=linux_qm
 
 # miniforge
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+if [[! -e Miniforge3-Linux-x86_64.sh]]
+  then
+  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+fi
 bash Miniforge3-Linux-x86_64.sh -b
 echo "source ~/miniforge3/etc/profile.d/conda.sh" >> ~/.bashrc
 echo "source ~/miniforge3/etc/profile.d/mamba.sh" >> ~/.bashrc

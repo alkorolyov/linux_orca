@@ -16,7 +16,7 @@ cat <<EOF >"$inp_file"
 %output
   PrintLevel Mini
   end
-%pal nprocs 24 end
+%pal nprocs 16 end
 %geom
    MaxIter 100
    end

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $# -eq 0 ]; then
+    echo "No command for timing provided."
+    exit
+fi
+
 # Number of times to run the script
 num_runs=5
 

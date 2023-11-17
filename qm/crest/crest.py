@@ -138,7 +138,7 @@ def xtb_optimize(
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
     smi = 'COC1CC(N)C1'
-    # smi = 'O'
+    # smi = 'CO'
 
     xyz = smi2xyz(smi)
     # print(xyz)
@@ -170,12 +170,11 @@ if __name__ == '__main__':
         xyz_fname,
         method="gfn2",
         ewin=12.0,
-        n_jobs=24,
+        n_jobs=16,
         verbose=False)
 
 
     if os.path.exists('crest_ensemble.xyz'):
         print('Success conformer screen')
 
-    print(os.getcwd())
     shutil.copy(f'crest_best.xyz', '../../data')
