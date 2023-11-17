@@ -14,4 +14,4 @@ Installation of orca in Linux
 
 3) Test the installation by running test jobs
 
-   `orca test.orca --use-hwthread-cpus`
+   `/opt/orca-5.0.3/orca test.inp --use-hwthread-cpus`

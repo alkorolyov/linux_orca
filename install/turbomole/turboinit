@@ -1,3 +1,6 @@
+# install using
+# echo "source ~/turboinit" >> ~/.bashrc
+
 # TURBOMOLE paths
 export TURBODIR=~/COSMOlogic/TmoleX16/TURBOMOLE
 source $TURBODIR/Config_turbo_env

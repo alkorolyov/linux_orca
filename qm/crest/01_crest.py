@@ -1,6 +1,8 @@
 import os
+import sys
 import shutil
 import subprocess
+
 from time import time
 
 # import molli as ml
@@ -136,8 +138,7 @@ def xtb_optimize(
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
     smi = 'COC1CC(N)C1'
-    # smi = 'CO'
-
+    # smi = 'O'
 
     xyz = smi2xyz(smi)
     # print(xyz)
@@ -176,14 +177,5 @@ if __name__ == '__main__':
     if os.path.exists('crest_ensemble.xyz'):
         print('Success conformer screen')
 
-    os.chdir('..')
     print(os.getcwd())
-    shutil.copy(f'{TMP_DIR}/crest_best.xyz', 'turbomole')
-    shutil.copy(f'{TMP_DIR}/crest_best.xyz', 'orca')
-
-    # for n_jobs in [2, 4, 6, 8, 12, 24]:
-    #     shutil.copy('crest_conformers.xyz', '_crest_conformers.xyz')
-    #     start = time()
-    #     print('n_jobs:', n_jobs)
-    #     conformer_screen('_crest_conformers.xyz', ewin=12, verbose=False, n_jobs=n_jobs)
-    #     print(f'total_time: {time() - start:.3f}s')
+    shutil.copy(f'crest_best.xyz', '../../data')

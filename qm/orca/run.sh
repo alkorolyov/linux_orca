@@ -10,8 +10,6 @@ if [ ! -e "$xyz_file" ]; then
     exit 1
 fi
 
-
-
 # Create the input file
 cat <<EOF >"$inp_file"
 !B3LYP DEF2-SVP OPT
@@ -38,5 +36,7 @@ mv $inp_file $tmp_dir
 #cp $xyz_file $tmp_dir
 cd $tmp_dir
 
-# run orca
+echo "Running orca. Check /orca/.tmp/output for progess ..."
 /opt/orca-5.0.3/orca/orca input.inp --use-hwthread-cpus > output
+
+echo "Finished"

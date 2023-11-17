@@ -1,0 +1,17 @@
+env_name=linux_qm
+
+# miniforge
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+bash Miniforge3-Linux-x86_64.sh -b
+echo "source ~/miniforge3/etc/profile.d/conda.sh" >> ~/.bashrc
+echo "source ~/miniforge3/etc/profile.d/mamba.sh" >> ~/.bashrc
+rm Miniforge3-Linux-x86_64.sh
+
+# create env
+mamba env create --name $env_name --file environment.yml
+conda activate $env_name
+
+# molli
+wget https://github.com/SEDenmarkLab/molli_firstgen/archive/refs/heads/main.zip -O molli.zip
+~/miniforge3/envs/$env_name/bin/pip install molli.zip #molli package
+rm molli.zip
