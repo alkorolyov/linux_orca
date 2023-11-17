@@ -9,6 +9,7 @@ bash Miniforge3-Linux-x86_64.sh -b
 echo "source ~/miniforge3/etc/profile.d/conda.sh" >> ~/.bashrc
 echo "source ~/miniforge3/etc/profile.d/mamba.sh" >> ~/.bashrc
 rm Miniforge3-Linux-x86_64.sh
+conda config --set auto_activate_base false
 
 # create env
 mamba env create --name $env_name --file environment.yml
