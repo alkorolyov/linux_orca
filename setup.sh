@@ -5,7 +5,7 @@
 env_name=linux_qm
 
 # miniforge
-if [ ! -e Miniforge3-Linux-x86_64.sh]; then
+if [ ! -e Miniforge3-Linux-x86_64.sh ]; then
   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
 fi
 bash Miniforge3-Linux-x86_64.sh -b
