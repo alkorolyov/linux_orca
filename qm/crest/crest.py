@@ -137,8 +137,8 @@ def xtb_optimize(
 
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
-    smi = 'COC1CC(N)C1'
-    # smi = 'CO'
+    # smi = 'COC1CC(N)C1'
+    smi = 'CO'
 
     xyz = smi2xyz(smi)
     # print(xyz)

@@ -1,4 +1,9 @@
-./run.sh crest_best.xyz ; rm -rf .tmp
+
+./run.sh ../data/methanol.xyz 'MP2 def2-TZVP' THF ; rm -rf .tmp
 ==============================================================
-Time average of 5 runs: 82.7490 ± 6.2440 sec
+Time average of 5 runs: 6.0440 ± 1.3733 sec
+==============================================================
+./run.sh ../data/test.xyz 'MP2 def2-TZVP' THF ; rm -rf .tmp
+==============================================================
+Time average of 5 runs: 1.2839 ± .1178 sec
 ==============================================================

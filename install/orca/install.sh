@@ -8,25 +8,29 @@ echo "copy it to /tmp"
 read -p "Press any key to continue"
 
 # openmpi install
+mkdir -p /opt/openmpi-4.1.1
 cd /tmp
 apt update
-apt install build-essential -y
-wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz
+apt install build-essential gfortran -y
+wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz -q --show-progress
 tar xvf openmpi-4.1.1.tar.gz
 cd openmpi-4.1.1
-./configure --prefix=/opt/orca-5.0.3/openmpi-4.1.1
-mkdir -p /opt/orca-5.0.3
+./configure --prefix=/opt/openmpi-4.1.1
 make install
+
+# check openmpi
+# mpiexec --version
 
 # extract orca
 cd /opt
 tar xvf /tmp/orca_5_0_3*.tar.xz
-mv orca_5_0_3* orca-5.0.3/orca
 
 # add to path
 ORCA_PATH="/opt/orca-5.0.3"
-export PATH="$ORCA_PATH/orca:$PATH"
-export LD_LIBRARY_PATH="$ORCA_PATH/orca:$LD_LIBRARY_PATH"
-export PATH="$ORCA_PATH/openmpi-4.1.1/bin:$PATH"
-export LD_LIBRARY_PATH="$ORCA_PATH/openmpi-4.1.1/lib:$LD_LIBRARY_PATH"
+export PATH="$ORCA_PATH:$PATH"
+export LD_LIBRARY_PATH="$ORCA_PATH:$LD_LIBRARY_PATH"
+export PATH="/opt/openmpi-4.1.1/bin:$PATH"
+export LD_LIBRARY_PATH="$/opt/openmpi-4.1.1/lib:$LD_LIBRARY_PATH"
 
+# test run
+orca test.inp

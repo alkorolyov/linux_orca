@@ -13,6 +13,7 @@ declare -a run_times
 
 # Run the script multiple times
 for ((i=1; i<=$num_runs; i++)); do
+    echo "============ Starting run number $i / $num_runs ============"
     start_time=$(date +%s.%N)
     eval "$1"  # Replace with the actual command to run your script
     end_time=$(date +%s.%N)
@@ -39,7 +40,8 @@ for time in "${run_times[@]}"; do
 done
 deviation=$(echo "scale=4; sqrt($sum_squared_diff / $num_runs)" | bc)
 
-echo "$1" > timing.log
+echo "" >> timing.log
+echo "$1" >> timing.log
 echo "=============================================================="  >> timing.log
 echo "Time average of $num_runs runs: $average_time ± $deviation sec"  >> timing.log
 echo "=============================================================="  >> timing.log
