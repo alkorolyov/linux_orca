@@ -1,4 +1,7 @@
 #!/bin/bash
+#####################################
+#### Prepare working environment ####
+#####################################
 env_name=linux_qm
 
 # miniforge
@@ -19,3 +22,14 @@ conda activate $env_name
 wget https://github.com/SEDenmarkLab/molli_firstgen/archive/refs/heads/main.zip -O molli.zip
 ~/miniforge3/envs/$env_name/bin/pip install molli.zip #molli package
 rm molli.zip
+
+# install as a local copy for dev
+pip install -e .
+
+# add ~/bin to PATH
+# and setup scripts
+mkdir ~/bin
+cp scripts/timing ~/bin
+chmod +x ~/bin/timing
+export PATH=:~/bin:$PATH
+echo "export PATH=:$PATH:~/bin:" >> ~/.bashrc

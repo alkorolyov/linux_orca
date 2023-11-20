@@ -9,6 +9,7 @@ dependencies:
   - rdkit
   - xtb
   - crest
+  - cclib
   - scikit-learn
   - scipy
   # molli deps

@@ -1,13 +1,15 @@
+#!/bin/bash
+
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
   exit
 fi
 
-echo "download https://orcaforum.kofo.mpg.de/app.php/dlext/?view=detail&df_id=180"
+echo "download orca-5.0.3_openmpi-4.1.1 from https://orcaforum.kofo.mpg.de/app.php/dlext/?view=detail&df_id=180"
 echo "copy it to /tmp"
 read -p "Press any key to continue"
 
-# openmpi install
+# openmpi compile and install
 mkdir -p /opt/openmpi-4.1.1
 cd /tmp
 apt update

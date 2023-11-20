@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Runs command provided in the command line multiple times
+# and returns avg and std running time.
+# ex. timing 'sleep 5; echo'
+
 if [ $# -eq 0 ]; then
     echo "No command for timing provided."
     exit

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# geometry optimisation using ORCA multiprocessing
+# creates tmp dir and stores results there
+# example: ./geom.sh methanol.xyz 'def2-SVP'
+
 tmp_dir=.tmp
 xyz_file="$1"
 basis_set="$2"

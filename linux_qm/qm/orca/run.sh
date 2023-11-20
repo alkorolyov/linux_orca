@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# geometry optimisation run with options
+# Run ORCA calculation with provided options
+#
 # syntax ./run.sh structure.xyz "orca options"(optional) solvent(optional)
-# example usage
+# example usage:
 # ./run.sh methanol.xyz
-# ./run.sh methanol.xyz 'B3LYP DEF2-TZVP' OPT
+# ./run.sh methanol.xyz 'B3LYP DEF2-TZVP OPT'
 # ./run.sh methanol.xyz 'MP2 DEF2-TZVP OPT' THF
 
 tmp_dir=.tmp
@@ -37,7 +38,7 @@ fi
 # Create the input file
 cat <<EOF >"$inp_file"
 !$options
-%pal nprocs 22 end
+%pal nprocs 8 end
 %geom
    MaxIter 100
    end
@@ -59,7 +60,7 @@ mv $inp_file $tmp_dir
 cd $tmp_dir
 
 echo "Running orca ... "
-echo "Check /orca/.tmp/output for progress."
+echo "Check .tmp/output for progress and results"
 /opt/orca-5.0.3/orca/orca input.inp --use-hwthread-cpus > output
 #tail -f output | grep --line-buffered -E "GEOMETRY OPTIMIZATION CYCLE|TOTAL RUN TIME"
 echo "Finished"

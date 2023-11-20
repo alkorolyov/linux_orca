@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=67"]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [{ name = "Alexander Korolyov", email = "korol.al@gmail.com" }]
+requires-python = ">=3.10"
+name = "linux_qm"
+description = "Package for conformer generation/descriptor calculation"
+version = "0.1a"
+
+[tool.setuptools.packages.find]
+include = ["linux_qm"]
+
