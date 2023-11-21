@@ -64,7 +64,7 @@ async def event_loop(job_queue, max_parallel):
 
         # Print status update with timestamp
         # logging.info(f"Running: {len(tasks)}, Finished: {finished_jobs}, Failed: {failed_jobs}, Waiting: {job_queue.qsize()}")
-        print(f"\r[ {time.time() - start_time:2.2f} ] Running: {len(tasks)}, Finished: {finished_jobs}, Failed: {failed_jobs}, Waiting: {job_queue.qsize()}", end='')
+        print(f"\r[ {time.time() - start_time:2.2f}s ] Running: {len(tasks)}, Finished: {finished_jobs}, Failed: {failed_jobs}, Waiting: {job_queue.qsize()}", end='')
         await asyncio.sleep(1)
 
         # # Break the loop if there is no more tasks and the job queue is empty
