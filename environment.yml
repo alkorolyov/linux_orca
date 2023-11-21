@@ -12,8 +12,10 @@ dependencies:
   - cclib
   - scikit-learn
   - scipy
+  # for visualization
   - py3Dmol
   - notebook
+  - seaborn
   # molli deps
   - colorama
   - PyYAML

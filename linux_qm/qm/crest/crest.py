@@ -2,18 +2,15 @@ import re
 import os
 import sys
 import shutil
-import pickle
 import subprocess
 import logging
 import argparse
 from time import time
 import datetime as dt
 
-
-from uuid import uuid4
-
 from rdkit import Chem
-from rdkit.Chem import AllChem
+
+from linux_qm.src.util import _load_smiles3D, _create_tmp_dir
 
 logging.basicConfig(
     format='[%(asctime)s] [%(levelname)s] %(message)s',
@@ -46,9 +43,10 @@ CREST_TMP = '.crest_tmp'
 #     return constr
 
 
-def conformer_pipeline(smi: str, n_jobs: int):
+def conformer_pipeline(smi: str, n_jobs: int = 8):
+    # start dir
     saved_work_dir = os.getcwd()
-    tmp_path = _create_tmp_dir()
+    tmp_path = _create_tmp_dir(CREST_TMP)
     os.chdir(tmp_path)
 
     mol = _load_smiles3D(smi)
@@ -105,20 +103,6 @@ def conformer_pipeline(smi: str, n_jobs: int):
     # restore working dir
     os.chdir(saved_work_dir)
     shutil.rmtree(tmp_path)
-    return mol
-
-
-def _create_tmp_dir():
-    uid = str(uuid4())
-    tmp_path = f"{CREST_TMP}/{uid}"
-    os.makedirs(tmp_path, exist_ok=True)
-    return tmp_path
-
-
-def _load_smiles3D(smi: str):
-    mol = Chem.AddHs(Chem.MolFromSmiles(smi))
-    AllChem.EmbedMolecule(mol)  # 3D coordinates
-    mol.SetProp("smiles", Chem.CanonSmiles(smi))
     return mol
 
 
@@ -298,7 +282,7 @@ if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
     # smi = 'COC1CN(C(OC)COC)C1'
     # smi = 'COC1CC(NC)C1'
-    # smi = 'COC1CNC1'
+    smi = 'COC1CNC1'
     # smi = 'O'
 
     # DEV

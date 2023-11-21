@@ -10,13 +10,13 @@ echo "copy it to /tmp"
 read -p "Press any key to continue"
 
 # openmpi compile and install
-mkdir -p /opt/openmpi-4.1.1
-cd /tmp
+cd /usr/src
 apt update
 apt install build-essential gfortran -y
 wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz -q --show-progress
-tar xvf openmpi-4.1.1.tar.gz
+tar xvf openmpi-4.1.1.tar.gz ; rm openmpi-4.1.1.tar.gz
 cd openmpi-4.1.1
+mkdir -p /opt/openmpi-4.1.1
 ./configure --prefix=/opt/openmpi-4.1.1
 make install
 
