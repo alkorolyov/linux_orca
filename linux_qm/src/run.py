@@ -9,7 +9,7 @@ logging.basicConfig(
     format='[%(asctime)s] [%(levelname)s] %(message)s',
     datefmt='%d-%m-%Y %I:%M:%S',
     encoding='utf-8',
-    level=logging.DEBUG)
+    level=logging.INFO)
 
 
 def log_std(stdout, stderr):
@@ -45,6 +45,7 @@ async def event_loop(job_queue, max_parallel):
     tasks = []
     finished_jobs = 0
     failed_jobs = 0
+    start_time = time.time()
     while True:
         # Start new jobs if there is room
         while len(tasks) < max_parallel and not job_queue.empty():
@@ -62,7 +63,8 @@ async def event_loop(job_queue, max_parallel):
                 tasks.remove(task)
 
         # Print status update with timestamp
-        logging.info(f"Running: {len(tasks)}, Finished: {finished_jobs}, Failed: {failed_jobs}, Waiting: {job_queue.qsize()}")
+        # logging.info(f"Running: {len(tasks)}, Finished: {finished_jobs}, Failed: {failed_jobs}, Waiting: {job_queue.qsize()}")
+        print(f"\r[ {time.time() - start_time:2.2f} ] Running: {len(tasks)}, Finished: {finished_jobs}, Failed: {failed_jobs}, Waiting: {job_queue.qsize()}", end='')
         await asyncio.sleep(1)
 
         # # Break the loop if there is no more tasks and the job queue is empty
@@ -76,12 +78,8 @@ def main(commands):
     # Create a job queue with unique job IDs
     job_queue = asyncio.Queue()
     for job_id, cmd in enumerate(commands):
-        job = {
-            'cmd': cmd,
-            'job_id': job_id
-        }
+        job = {'cmd': cmd, 'job_id': job_id}
         job_queue.put_nowait(job)
-
     # Run jobs with a maximum `max_parallel` in parallel
     asyncio.run(event_loop(job_queue, max_parallel=4))
 
