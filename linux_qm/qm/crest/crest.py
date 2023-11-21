@@ -89,14 +89,14 @@ def conformer_pipeline(smi: str, n_jobs: int):
     add_conformers(mol, 'crest_ensemble.xyz')
 
     # DEV
-    original_mol = pickle.dumps(_load_smiles3D(smi))
-    conf_mol = pickle.dumps(mol, protocol=4)
-    conf_mol_5 = pickle.dumps(mol, protocol=5)
-    print('original_pkl', len(original_mol))
-    print('conf_pkl 4', len(conf_mol))
-    print('conf_pkl 5', len(conf_mol_5))
-    print('num conf:', mol.GetNumConformers())
-    print('bytes per atom (conformers):', (len(conf_mol)- len(original_mol))/ (mol.GetNumConformers() + 1) / _load_smiles3D(smi).GetNumAtoms())
+    # original_mol = pickle.dumps(_load_smiles3D(smi))
+    # conf_mol = pickle.dumps(mol, protocol=4)
+    # conf_mol_5 = pickle.dumps(mol, protocol=5)
+    # print('original_pkl', len(original_mol))
+    # print('conf_pkl 4', len(conf_mol))
+    # print('conf_pkl 5', len(conf_mol_5))
+    # print('num conf:', mol.GetNumConformers())
+    # print('bytes per atom (conformers):', (len(conf_mol)- len(original_mol))/ (mol.GetNumConformers() + 1) / _load_smiles3D(smi).GetNumAtoms())
     # for conf in mol.GetConformers():
     #     print('3D:', conf.Is3D())
     #     print('energy:', conf.GetProp('energy'))
@@ -104,8 +104,6 @@ def conformer_pipeline(smi: str, n_jobs: int):
 
     # restore working dir
     os.chdir(saved_work_dir)
-    # print('cwd:', os.getcwd())
-    # print('tmp_path:', tmp_path)
     shutil.rmtree(CREST_TMP)
     return mol
 
