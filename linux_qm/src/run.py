@@ -4,13 +4,23 @@ import time
 import logging
 import argparse
 
+
 logging.basicConfig(
     format='[%(asctime)s] [%(levelname)s] %(message)s',
     datefmt='%d-%m-%Y %I:%M:%S',
     encoding='utf-8',
-    level=logging.INFO)
+    level=logging.DEBUG)
 
-async def run_job(cmd, job_id, semaphore):
+
+def log_std(stdout, stderr):
+    if stdout.decode():
+        logging.debug(f"STDOUT: {stdout.decode()}")
+    if stderr.decode():
+        logging.debug(f"STDERR: {stderr.decode()}")
+
+
+async def run_job(job, semaphore):
+    cmd, job_id = job['cmd'], job['job_id']
     try:
         async with semaphore:
             process = await asyncio.create_subprocess_shell(
@@ -20,17 +30,16 @@ async def run_job(cmd, job_id, semaphore):
             return_code = process.returncode
 
             logging.debug(f"Job {job_id} completed with return code {return_code}")
-            logging.debug(f"STDOUT: {stdout.decode()}")
+            log_std(stdout, stderr)
             return return_code
 
     except Exception as e:
         logging.warning(f"Job {job_id} failed with error: {e}")
-        logging.debug(f"STDOUT: {stdout.decode()}")
-        logging.debug(f"STDERR: {stderr.decode()}")
+        log_std(stdout, stderr)
         return 1
 
-async def event_loop(job_queue, queue_size):
-    semaphore = asyncio.Semaphore(queue_size)
+async def event_loop(job_queue, max_parallel):
+    semaphore = asyncio.Semaphore(max_parallel)
 
     # Start jobs
     tasks = []
@@ -38,9 +47,9 @@ async def event_loop(job_queue, queue_size):
     failed_jobs = 0
     while True:
         # Start new jobs if there is room
-        while len(tasks) < queue_size and not job_queue.empty():
-            cmd, job_id = await job_queue.get()
-            task = asyncio.create_task(run_job(cmd, job_id, semaphore))
+        while len(tasks) < max_parallel and not job_queue.empty():
+            job = await job_queue.get()
+            task = asyncio.create_task(run_job(job, semaphore))
             tasks.append(task)
 
         # Check for finished tasks
@@ -67,10 +76,14 @@ def main(commands):
     # Create a job queue with unique job IDs
     job_queue = asyncio.Queue()
     for job_id, cmd in enumerate(commands):
-        job_queue.put_nowait((cmd, job_id))
+        job = {
+            'cmd': cmd,
+            'job_id': job_id
+        }
+        job_queue.put_nowait(job)
 
-    # Run jobs with a maximum `queue_size` in parallel
-    asyncio.run(event_loop(job_queue, queue_size=4))
+    # Run jobs with a maximum `max_parallel` in parallel
+    asyncio.run(event_loop(job_queue, max_parallel=4))
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ logging.basicConfig(
     encoding='utf-8',
     level=logging.INFO)
 
-TMP_DIR = '.crest_tmp'
+CREST_TMP = '.crest_tmp'
 
 # def generate_constrain_input(constr_val_angles: list):
 #     atoms_constr = []
@@ -46,7 +46,6 @@ TMP_DIR = '.crest_tmp'
 
 def conformer_pipeline(smi: str, n_jobs: int):
     saved_work_dir = os.getcwd()
-
     tmp_path = _create_tmp_dir()
     os.chdir(tmp_path)
 
@@ -90,7 +89,6 @@ def conformer_pipeline(smi: str, n_jobs: int):
     add_conformers(mol, 'crest_ensemble.xyz')
 
     # DEV
-
     original_mol = pickle.dumps(_load_smiles3D(smi))
     conf_mol = pickle.dumps(mol, protocol=4)
     conf_mol_5 = pickle.dumps(mol, protocol=5)
@@ -104,16 +102,20 @@ def conformer_pipeline(smi: str, n_jobs: int):
     #     print('energy:', conf.GetProp('energy'))
     #     print('id:', conf.GetId())
 
-
+    # restore working dir
     os.chdir(saved_work_dir)
-    shutil.rmtree(tmp_path)
+    # print('cwd:', os.getcwd())
+    # print('tmp_path:', tmp_path)
+    shutil.rmtree(CREST_TMP)
     return mol
+
 
 def _create_tmp_dir():
     uid = str(uuid4())
-    tmp_path = f"{TMP_DIR}/{uid}"
+    tmp_path = f"{CREST_TMP}/{uid}"
     os.makedirs(tmp_path, exist_ok=True)
     return tmp_path
+
 
 def _load_smiles3D(smi: str):
     mol = Chem.AddHs(Chem.MolFromSmiles(smi))
@@ -121,12 +123,14 @@ def _load_smiles3D(smi: str):
     mol.SetProp("smiles", Chem.CanonSmiles(smi))
     return mol
 
+
 def _create_input_file(mol: Chem.rdchem.Mol):
     fname = 'input.xyz'
     xyz = Chem.MolToXYZBlock(mol)
     with open('input.xyz', 'w') as f:
         f.write(xyz)
     return fname
+
 
 def _check_error(mol, filepath: str, stage: str):
     if os.path.exists(filepath):
@@ -284,9 +288,9 @@ def main():
 
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
-    smi = 'COC1CN(C(OC)COC)C1'
+    # smi = 'COC1CN(C(OC)COC)C1'
     # smi = 'COC1CC(NC)C1'
-    # smi = 'COC1CNC1'
+    smi = 'COC1CNC1'
     # smi = 'O'
 
     # DEV
