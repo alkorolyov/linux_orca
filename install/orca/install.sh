@@ -24,8 +24,9 @@ make install
 # mpiexec --version
 
 # extract orca
-cd /opt
-tar xvf /tmp/orca_5_0_3*.tar.xz
+cd /tmp
+tar xvf orca_5_0_3*.tar.xz
+mv orca_5_0_3_linux_x86-64_shared_openmpi411 /opt/orca-5.0.3
 
 # add to path
 ORCA_PATH="/opt/orca-5.0.3"

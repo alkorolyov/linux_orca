@@ -1,0 +1,3 @@
+# all tmp files and folders
+/.*tmp/
+/.*tmp/*

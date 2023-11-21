@@ -9,7 +9,6 @@ dependencies:
   - rdkit
   - xtb
   - crest
-  - cclib
   - scikit-learn
   - scipy
   # for visualization
@@ -21,3 +20,5 @@ dependencies:
   - PyYAML
   - joblib
   - threadpoolctl
+  - pip:
+      - cclib
