@@ -6,6 +6,8 @@ import pickle
 import subprocess
 import logging
 import argparse
+from time import time
+import datetime as dt
 
 
 from uuid import uuid4
@@ -64,9 +66,8 @@ def conformer_pipeline(smi: str, n_jobs: int):
     _check_error(mol, 'xtbopt.xyz', 'geometry optimization')
 
     # generate conformers
-    xyz_fname = 'xtbopt.xyz'
     conformer_gen(
-        xyz_fname,
+        'xtbopt.xyz',
         method="gfnff",
         ewin=8.0,
         mdlen=5.0,
@@ -76,9 +77,8 @@ def conformer_pipeline(smi: str, n_jobs: int):
     _check_error(mol, 'crest_conformers.xyz', 'conformer generation')
 
     # screen conformers
-    xyz_fname = 'crest_conformers.xyz'
     conformer_screen(
-        xyz_fname,
+        'crest_conformers.xyz',
         method="gfn2",
         ewin=12.0,
         n_jobs=n_jobs,
@@ -104,7 +104,7 @@ def conformer_pipeline(smi: str, n_jobs: int):
 
     # restore working dir
     os.chdir(saved_work_dir)
-    shutil.rmtree(CREST_TMP)
+    shutil.rmtree(tmp_path)
     return mol
 
 
@@ -261,6 +261,10 @@ def _parse_xyz(xyz: str):
     return energy, xyz_coordinates
 
 
+def round_timedelta(timedelta, digits: int = 0):
+    date, fraction =  str(timedelta).split('.')
+    return date + '.' + fraction[:digits]
+
 def main():
     parser = argparse.ArgumentParser(description='Generate conformer ensemble using CREST')
     #
@@ -276,19 +280,25 @@ def main():
     n_jobs = args.n_jobs
     verbose = args.verbose
 
-    if verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+    # if verbose:
+    #     logging.getLogger().setLevel(logging.DEBUG)
+
+    start = time()
 
     mol = conformer_pipeline(smiles, n_jobs)
 
-    return mol
+    if verbose:
+        print(f"{mol.GetNumConformers()} conformers found for '{smiles}' ")
+        elapsed_time = dt.timedelta(seconds=time() - start)
+        print(f'Elapsed time:', round_timedelta(elapsed_time, 1))
 
+    return mol
 
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
     # smi = 'COC1CN(C(OC)COC)C1'
     # smi = 'COC1CC(NC)C1'
-    smi = 'COC1CNC1'
+    # smi = 'COC1CNC1'
     # smi = 'O'
 
     # DEV

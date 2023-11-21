@@ -1,9 +1,6 @@
-
-./run.sh ../data/methanol.xyz 'MP2 def2-TZVP' THF ; rm -rf .tmp
+./run.sh ../data/methanol.xyz 'B3LYP def2-SVP OPT' ; rm -rf .tmp
+Time average of 5 runs: 8.5078 ± .1410 sec
 ==============================================================
-Time average of 5 runs: 6.0440 ± 1.3733 sec
-==============================================================
-./run.sh ../data/test.xyz 'MP2 def2-TZVP' THF ; rm -rf .tmp
-==============================================================
-Time average of 5 runs: 1.2839 ± .1178 sec
+./run.sh ../data/methanol.xyz 'B3LYP def2-TZVP OPT' ; rm -rf .tmp
+Time average of 5 runs: 10.9135 ± .6953 sec
 ==============================================================

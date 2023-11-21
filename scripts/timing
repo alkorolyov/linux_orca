@@ -44,8 +44,7 @@ for time in "${run_times[@]}"; do
 done
 deviation=$(echo "scale=4; sqrt($sum_squared_diff / $num_runs)" | bc)
 
-echo "" >> timing.log
+
 echo "$1" >> timing.log
-echo "=============================================================="  >> timing.log
 echo "Time average of $num_runs runs: $average_time ± $deviation sec"  >> timing.log
 echo "=============================================================="  >> timing.log

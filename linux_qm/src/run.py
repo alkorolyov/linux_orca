@@ -12,7 +12,7 @@ logging.basicConfig(
     level=logging.INFO)
 
 
-def log_std(stdout, stderr):
+def log_output(stdout, stderr):
     if stdout.decode():
         logging.debug(f"STDOUT: {stdout.decode()}")
     if stderr.decode():
@@ -30,12 +30,12 @@ async def run_job(job, semaphore):
             return_code = process.returncode
 
             logging.debug(f"Job {job_id} completed with return code {return_code}")
-            log_std(stdout, stderr)
+            log_output(stdout, stderr)
             return return_code
 
     except Exception as e:
         logging.warning(f"Job {job_id} failed with error: {e}")
-        log_std(stdout, stderr)
+        log_output(stdout, stderr)
         return 1
 
 async def event_loop(job_queue, max_parallel):
