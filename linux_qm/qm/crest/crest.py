@@ -44,6 +44,8 @@ TMP_DIR = '.crest_tmp'
 
 
 def conformer_pipeline(smi: str, n_jobs: int):
+    saved_work_dir = os.getcwd()
+
     tmp_path = _create_tmp_dir()
     os.chdir(tmp_path)
 
@@ -94,13 +96,15 @@ def conformer_pipeline(smi: str, n_jobs: int):
         print('energy:', conf.GetProp('energy'))
         print('id:', conf.GetId())
 
+
+    os.chdir(saved_work_dir)
+    shutil.rmtree(tmp_path)
     return mol
 
 def _create_tmp_dir():
     uid = str(uuid4())
     tmp_path = f"{TMP_DIR}/{uid}"
     os.makedirs(tmp_path, exist_ok=True)
-
     return tmp_path
 
 def _load_smiles3D(smi: str):
@@ -122,6 +126,28 @@ def _check_error(mol, filepath: str, stage: str):
     else:
         raise ValueError(f"Failed {stage} for '{mol.GetProp('smiles')}'")
 
+
+
+def xtb_optimize(
+        xyz_name,
+        method: str = "gff",
+        crit: str = "normal",
+        xtbinp: str = "",
+        maxiter: int = 50,
+        n_jobs: int = 8,
+        verbose = False,
+):
+    """
+    Attempt a geometry optimization with parameters specified
+    """
+
+    # command that will be used to execute xtb package
+    _cmd = f"""xtb {xyz_name} --{method} --opt {crit} --cycles {maxiter} {"--input param.inp" if xtbinp else ""} -P {n_jobs}"""
+    # print(_cmd)
+    subprocess.run(
+        _cmd.split(' '),
+        stdout = None if verbose else subprocess.DEVNULL,
+    )
 
 def conformer_gen(
         xyz_name,
@@ -173,41 +199,20 @@ def conformer_screen(
     )
 
 
-def xtb_optimize(
-        xyz_name,
-        method: str = "gff",
-        crit: str = "normal",
-        xtbinp: str = "",
-        maxiter: int = 50,
-        n_jobs: int = 8,
-        verbose = False,
-):
-    """
-    Attempt a geometry optimization with parameters specified
-    """
 
-    # command that will be used to execute xtb package
-    _cmd = f"""xtb {xyz_name} --{method} --opt {crit} --cycles {maxiter} {"--input param.inp" if xtbinp else ""} -P {n_jobs}"""
-    # print(_cmd)
-    subprocess.run(
-        _cmd.split(' '),
-        stdout = None if verbose else subprocess.DEVNULL,
-    )
-
-
-def add_conformers(mol, xyz_ensemble: str):
-    conformers = _read_conformers(xyz_ensemble)
-
+def add_conformers(mol, ensemble_path: str):
     # remove existing conf
     mol.RemoveConformer(0)
+
+    conformers = _read_conformers(ensemble_path)
 
     for conf in conformers:
         atom_symbols, energy, coords = _parse_xyz(conf)
         _add_conformer_to_molecule(mol, energy, coords)
 
-def _read_conformers(file_path):
+def _read_conformers(ensemble_path):
     conformers = []
-    with open(file_path, 'r') as file:
+    with open(ensemble_path, 'r') as file:
         lines = file.readlines()
 
     conformer_str = ''
@@ -232,10 +237,9 @@ def _add_conformer_to_molecule(molecule, energy, coordinates):
     molecule.AddConformer(conformer, assignId=True)
 
 def _parse_xyz(xyz: str):
-
     lines = xyz.split('\n')
 
-    # Extract atom count and coordinates from XYZ file
+    # Extract atom count and coordinates from XYZ block
     atom_count = int(lines[0].strip())
     energy = float(lines[1].strip())
     coordinates = [line.split() for line in lines[2:2 + atom_count]]
