@@ -7,6 +7,7 @@ import subprocess
 import logging
 import argparse
 
+
 from uuid import uuid4
 
 from rdkit import Chem
@@ -88,13 +89,20 @@ def conformer_pipeline(smi: str, n_jobs: int):
 
     add_conformers(mol, 'crest_ensemble.xyz')
 
-
     # DEV
+
+    original_mol = pickle.dumps(_load_smiles3D(smi))
+    conf_mol = pickle.dumps(mol, protocol=4)
+    conf_mol_5 = pickle.dumps(mol, protocol=5)
+    print('original_pkl', len(original_mol))
+    print('conf_pkl 4', len(conf_mol))
+    print('conf_pkl 5', len(conf_mol_5))
     print('num conf:', mol.GetNumConformers())
-    for conf in mol.GetConformers():
-        print('3D:', conf.Is3D())
-        print('energy:', conf.GetProp('energy'))
-        print('id:', conf.GetId())
+    print('bytes per atom (conformers):', (len(conf_mol)- len(original_mol))/ (mol.GetNumConformers() + 1) / _load_smiles3D(smi).GetNumAtoms())
+    # for conf in mol.GetConformers():
+    #     print('3D:', conf.Is3D())
+    #     print('energy:', conf.GetProp('energy'))
+    #     print('id:', conf.GetId())
 
 
     os.chdir(saved_work_dir)
@@ -207,7 +215,7 @@ def add_conformers(mol, ensemble_path: str):
     conformers = _read_conformers(ensemble_path)
 
     for conf in conformers:
-        atom_symbols, energy, coords = _parse_xyz(conf)
+        energy, coords = _parse_xyz(conf)
         _add_conformer_to_molecule(mol, energy, coords)
 
 def _read_conformers(ensemble_path):
@@ -248,8 +256,7 @@ def _parse_xyz(xyz: str):
     atom_symbols = [coord[0] for coord in coordinates]
     xyz_coordinates = [(float(coord[1]), float(coord[2]), float(coord[3])) for coord in coordinates]
 
-    return atom_symbols, energy, xyz_coordinates
-
+    return energy, xyz_coordinates
 
 
 def main():
@@ -275,11 +282,10 @@ def main():
     return mol
 
 
-
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
-    # smi = 'COC1CN(C(OC)COC)C1'
-    smi = 'COC1CC(NC)C1'
+    smi = 'COC1CN(C(OC)COC)C1'
+    # smi = 'COC1CC(NC)C1'
     # smi = 'COC1CNC1'
     # smi = 'O'
 
