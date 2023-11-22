@@ -225,7 +225,7 @@ def _read_conformers(ensemble_path):
 
 def _add_conformer_to_molecule(molecule, energy, coordinates):
     conformer = Chem.Conformer()
-    conformer.SetProp('energy', str(energy))
+    conformer.SetDoubleProp('energy', energy)
     for idx, (x, y, z) in enumerate(coordinates):
         conformer.SetAtomPosition(idx, (x, y, z))
     molecule.AddConformer(conformer, assignId=True)

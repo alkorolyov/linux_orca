@@ -26,6 +26,8 @@ rm molli.zip
 # install as a local copy for dev
 pip install -e .
 
+
+
 # add ~/bin to PATH
 # and setup scripts
 mkdir ~/bin

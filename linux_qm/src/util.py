@@ -45,7 +45,7 @@ def draw3Dconfs(mol, autoalign=True, size=(600, 400)):
         mol_block = Chem.MolToMolBlock(mol, confId=conf.GetId())
         viewer.addModel(mol_block, "mol")
     viewer.setStyle({"stick": {}})
-    viewer.setBackgroundColor("white")
+    viewer.setBackgroundColor("black")
     viewer.zoomTo()
     viewer.show()
 
