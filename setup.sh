@@ -5,13 +5,13 @@
 env_name=linux_qm
 
 # miniforge
-if [ ! -e Miniforge3-Linux-x86_64.sh ]; then
-  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+if [ ! -f Miniforge3-Linux-x86_64.sh ]; then
+  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh  -q --show-progress
 fi
 bash Miniforge3-Linux-x86_64.sh -b
 echo "source ~/miniforge3/etc/profile.d/conda.sh" >> ~/.bashrc
 echo "source ~/miniforge3/etc/profile.d/mamba.sh" >> ~/.bashrc
-echo source ~/.bashrc
+source ~/.bashrc
 rm Miniforge3-Linux-x86_64.sh
 conda config --set auto_activate_base false
 
