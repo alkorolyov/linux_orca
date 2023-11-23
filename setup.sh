@@ -11,6 +11,7 @@ fi
 bash Miniforge3-Linux-x86_64.sh -b
 echo "source ~/miniforge3/etc/profile.d/conda.sh" >> ~/.bashrc
 echo "source ~/miniforge3/etc/profile.d/mamba.sh" >> ~/.bashrc
+echo source ~/.bashrc
 rm Miniforge3-Linux-x86_64.sh
 conda config --set auto_activate_base false
 
@@ -26,12 +27,10 @@ rm molli.zip
 # install as a local copy for dev
 pip install -e .
 
-
-
 # add ~/bin to PATH
 # and setup scripts
-mkdir ~/bin
-cp scripts/timing ~/bin
-chmod +x ~/bin/timing
-export PATH=:~/bin:$PATH
-echo "export PATH=:$PATH:~/bin:" >> ~/.bashrc
+# mkdir ~/bin
+# cp scripts/timing ~/bin
+# chmod +x ~/bin/timing
+# export PATH=:~/bin:$PATH
+# echo "export PATH=:$PATH:~/bin:" >> ~/.bashrc
