@@ -19,9 +19,11 @@ conda config --set auto_activate_base false
 mamba env create --name $env_name --file environment.yml
 conda activate $env_name
 
+pip config set global.trusted-host "pypi.org files.pythonhosted.org pypi.python.org"
+
 # molli
 wget https://github.com/SEDenmarkLab/molli_firstgen/archive/refs/heads/main.zip -O molli.zip
-~/miniforge3/envs/$env_name/bin/pip install molli.zip #molli package
+pip install molli.zip #molli package
 rm molli.zip
 
 # install as a local copy for dev
