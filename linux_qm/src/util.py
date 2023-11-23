@@ -32,7 +32,7 @@ def SetPositions(conf, atom_positions):
         xyz = atom_positions[i]
         conf.SetAtomPosition(i, xyz)
 
-def draw3Dconfs(mol, autoalign=True, size=(600, 400)):
+def draw3Dconfs(mol, autoalign=True, confIds=None, size=(600, 400)):
     if autoalign:
         AllChem.AlignMolConformers(mol)
 
@@ -41,9 +41,15 @@ def draw3Dconfs(mol, autoalign=True, size=(600, 400)):
     # Visualize using Py3Dmol
     viewer = py3Dmol.view(width=size[0], height=size[1])
 
+    if not confIds:
+        # all conformers
+        confIds = [conf.GetId() for conf in mol.GetConformers()]
+
     for conf in mol.GetConformers():
-        mol_block = Chem.MolToMolBlock(mol, confId=conf.GetId())
-        viewer.addModel(mol_block, "mol")
+        if conf.GetId() in confIds:
+            mol_block = Chem.MolToMolBlock(mol, confId=conf.GetId())
+            viewer.addModel(mol_block, "mol")
+
     viewer.setStyle({"stick": {}})
     viewer.setBackgroundColor("black")
     viewer.zoomTo()
