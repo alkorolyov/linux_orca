@@ -20,5 +20,6 @@ dependencies:
   - PyYAML
   - joblib
   - threadpoolctl
+  - pip
   - pip:
       - cclib
