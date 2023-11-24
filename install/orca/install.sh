@@ -35,5 +35,5 @@ export LD_LIBRARY_PATH="$ORCA_PATH:$LD_LIBRARY_PATH"
 export PATH="/opt/openmpi-4.1.1/bin:$PATH"
 export LD_LIBRARY_PATH="$/opt/openmpi-4.1.1/lib:$LD_LIBRARY_PATH"
 
-# test run
+# test _run
 orca test.inp

@@ -93,7 +93,7 @@ if __name__ == "__main__":
     # # Parse the command-line arguments
     # args = parser.parse_args()
     #
-    # # read filepath containing list of commands to run
+    # # read filepath containing list of commands to _run
     # filepath = sys.argv[1]
     # if filepath:
     #     with open(filepath, 'r') as f:
@@ -109,5 +109,5 @@ if __name__ == "__main__":
         # Add more jobs as needed
     ]
 
-    # asyncio.run(main(commands))
+    # asyncio._run(main(commands))
     main(commands)

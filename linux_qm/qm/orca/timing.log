@@ -1,6 +1,6 @@
-./run.sh ../data/methanol.xyz 'B3LYP def2-SVP OPT' ; rm -rf .tmp
+./_run.sh ../data/methanol.xyz 'B3LYP def2-SVP OPT' ; rm -rf .tmp
 Time average of 5 runs: 8.5078 ± .1410 sec
 ==============================================================
-./run.sh ../data/methanol.xyz 'B3LYP def2-TZVP OPT' ; rm -rf .tmp
+./_run.sh ../data/methanol.xyz 'B3LYP def2-TZVP OPT' ; rm -rf .tmp
 Time average of 5 runs: 10.9135 ± .6953 sec
 ==============================================================

@@ -2,11 +2,11 @@
 
 # Run ORCA calculation with provided options
 #
-# syntax ./run.sh structure.xyz "orca options"(optional) solvent(optional)
+# syntax ./_run.sh structure.xyz "orca options"(optional) solvent(optional)
 # example usage:
-# ./run.sh methanol.xyz
-# ./run.sh methanol.xyz 'B3LYP DEF2-TZVP OPT'
-# ./run.sh methanol.xyz 'MP2 DEF2-TZVP OPT' THF
+# ./_run.sh methanol.xyz
+# ./_run.sh methanol.xyz 'B3LYP DEF2-TZVP OPT'
+# ./_run.sh methanol.xyz 'MP2 DEF2-TZVP OPT' THF
 
 tmp_dir=.tmp
 xyz_file="$1"

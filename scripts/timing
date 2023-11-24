@@ -9,10 +9,10 @@ if [ $# -eq 0 ]; then
     exit
 fi
 
-# Number of times to run the script
+# Number of times to _run the script
 num_runs=5
 
-# Array to store individual run times
+# Array to store individual _run times
 declare -a run_times
 
 # Run the script multiple times
@@ -22,10 +22,10 @@ for ((i=1; i<=$num_runs; i++)); do
     eval "$1"  # Replace with the actual command to run your script
     end_time=$(date +%s.%N)
 
-    # Calculate the run time in seconds
+    # Calculate the _run time in seconds
     run_time=$(echo "$end_time - $start_time" | bc)
 
-    # Store the run time in the array
+    # Store the _run time in the array
     run_times+=($run_time)
 done
 
