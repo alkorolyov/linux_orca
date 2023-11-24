@@ -22,6 +22,10 @@ conda activate $env_name
 pip config set global.trusted-host "pypi.org files.pythonhosted.org pypi.python.org"
 pip install cclib
 
+# add to jupyter
+pip install ipykernel
+python -m ipykernel install --user --name $env_name --display-name "Python ($env_name)"
+
 # molli
 # wget https://github.com/SEDenmarkLab/molli_firstgen/archive/refs/heads/main.zip -O molli.zip -q --show-progress
 # pip install molli.zip #molli package
