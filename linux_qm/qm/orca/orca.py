@@ -3,7 +3,7 @@ import logging
 import cclib
 import os
 import shutil
-import time
+from time import time
 import io
 import subprocess
 from rdkit.Chem import rdchem
