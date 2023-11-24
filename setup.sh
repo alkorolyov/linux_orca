@@ -2,7 +2,7 @@
 #####################################
 #### Prepare working environment ####
 #####################################
-env_name=linux_qm
+env_name="linux_qm"
 
 # miniforge
 if [ ! -f Miniforge3-Linux-x86_64.sh ]; then
