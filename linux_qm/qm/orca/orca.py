@@ -3,6 +3,7 @@ import logging
 import cclib
 import os
 import shutil
+import time
 import io
 import subprocess
 from rdkit.Chem import rdchem
@@ -160,6 +161,7 @@ class OrcaDriver:
             logging.info(f'Success: {success}')
 
     def geometry_optimization(self, conf):
+        start = time()
         logging.info(f"Geometry optimization")
         logging.info(f"Method: {self.options['method']}")
         self.options['opt_geom'] = True
@@ -173,6 +175,8 @@ class OrcaDriver:
             self.update_geometry(conf, data)
             logging.info(f'Success: {success}')
             logging.info(f'Num Iter: {len(data.atomcoords)}')
+            logging.info(f'Elapsed Time: {time() - start:.1f}s')
+
 
     def update_geometry(self, conf, cclib_data):
         SetPositions(conf, cclib_data.atomcoords[-1])
