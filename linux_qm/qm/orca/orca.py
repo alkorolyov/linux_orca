@@ -31,7 +31,7 @@ class OrcaDriver:
             tmp_root: str = '.orca_tmp'
     ):
         self.orca_path = orca_path
-        self.openmpi_path = openmpi_path
+        self.omp_path = openmpi_path
         self.options = {**self.options, **(options or {})}
         self.tmp_root = tmp_root
         self.set_orca_env()
@@ -40,9 +40,9 @@ class OrcaDriver:
         if self.orca_path not in os.environ['PATH']:
             os.environ['PATH'] = f"{self.orca_path}:{os.environ.get('PATH')}"
             os.environ['LD_LIBRARY_PATH'] = f"{self.orca_path}:{os.environ.get('LD_LIBRARY_PATH', '')}"
-        if self.openmpi_path not in os.environ['PATH']:
-            os.environ['PATH'] = f"{self.openmpi_path}/bin:{os.environ['PATH']}"
-            os.environ['LD_LIBRARY_PATH'] = f"{self.openmpi_path}/lib:{os.environ['LD_LIBRARY_PATH']}"
+        if self.omp_path not in os.environ['PATH']:
+            os.environ['PATH'] = f"{self.omp_path}/bin:{os.environ['PATH']}"
+            os.environ['LD_LIBRARY_PATH'] = f"{self.omp_path}/lib:{os.environ['LD_LIBRARY_PATH']}"
 
         # # intel MKL
         # os.environ['LD_LIBRARY_PATH'] = f"/usr/lib/x86_64-linux-gnu:{os.environ['LD_LIBRARY_PATH']}"
@@ -160,6 +160,8 @@ class OrcaDriver:
             logging.info(f'Success: {success}')
 
     def geometry_optimization(self, conf):
+        logging.info(f"Geometry optimization")
+        logging.info(f"Method: {self.options['method']}")
         self.options['opt_geom'] = True
         data = self.run(conf)
 

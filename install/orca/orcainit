@@ -1,8 +1,10 @@
 # copy to user home and execute and restart shell
 # echo "source ~/orcainit" >> ~/.bashrc
 
-ORCA_PATH="/opt/orca-5.0.3"
+export ORCA_PATH="/opt/orca-5.0.3"
+export OMP_PATH="/opt/openmpi-4.1.1"
+
 export PATH="$ORCA_PATH:$PATH"
 export LD_LIBRARY_PATH="$ORCA_PATH:$LD_LIBRARY_PATH"
-export PATH="/opt/openmpi-4.1.1/bin:$PATH"
-export LD_LIBRARY_PATH="/opt/openmpi-4.1.1/lib:$LD_LIBRARY_PATH"
+export PATH="$OMP_PATH/bin:$PATH"
+export LD_LIBRARY_PATH="$OMP_PATH/lib:$LD_LIBRARY_PATH"

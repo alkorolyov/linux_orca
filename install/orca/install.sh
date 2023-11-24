@@ -29,11 +29,8 @@ tar xvf orca_5_0_3*.tar.xz
 mv orca_5_0_3_linux_x86-64_shared_openmpi411 /opt/orca-5.0.3
 
 # add to path
-ORCA_PATH="/opt/orca-5.0.3"
-export PATH="$ORCA_PATH:$PATH"
-export LD_LIBRARY_PATH="$ORCA_PATH:$LD_LIBRARY_PATH"
-export PATH="/opt/openmpi-4.1.1/bin:$PATH"
-export LD_LIBRARY_PATH="$/opt/openmpi-4.1.1/lib:$LD_LIBRARY_PATH"
+source orcainit
+cp orcainit ~/
 
 # test _run
 orca test.inp

@@ -51,7 +51,7 @@ def draw3Dconfs(mol, autoalign=True, confIds=None, size=(600, 400)):
             viewer.addModel(mol_block, "mol")
 
     viewer.setStyle({"stick": {}})
-    viewer.setBackgroundColor("black")
+    # viewer.setBackgroundColor("black")
     viewer.zoomTo()
     viewer.show()
 
