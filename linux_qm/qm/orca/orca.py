@@ -245,7 +245,10 @@ class OrcaDriver:
         #     # f"  Print[ P_gradient ] 1\n"
         #     f"  end\n")
 
-        input_str += f"%pal nprocs {n_jobs} end\n"
+        # parallel runs
+        if n_jobs > 1:
+            input_str += f"%pal nprocs {n_jobs} end\n"
+
         input_str += f"%maxcore {mem_per_core}\n"
         input_str += self._gen_xyz_block(conf)
 

@@ -66,7 +66,7 @@ def conformer_pipeline(smi: str, n_jobs: int = 8):
     _check_error(mol, 'xtbopt.xyz', 'geometry optimization')
 
     # generate conformers
-    conformer_gen(
+    res = conformer_gen(
         'xtbopt.xyz',
         method="gfnff",
         ewin=8.0,
@@ -74,6 +74,10 @@ def conformer_pipeline(smi: str, n_jobs: int = 8):
         n_jobs=n_jobs,
     )
 
+    if not os.path.exists('crest_conformers.xyz'):
+        logging.error(f'STDOUT:\n{res.stdout}')
+        logging.error(f'STDERR:\n{res.stderr}')
+        raise ValueError('conformer generation failed')
     _check_error(mol, 'crest_conformers.xyz', 'conformer generation')
 
     # screen conformers
@@ -171,11 +175,14 @@ def conformer_gen(
 
     # print(_cmd)
     # print(_cmd)
-    subprocess.run(
+    res = subprocess.run(
         _cmd.split(' '),
         capture_output=True,
         text=True
     )
+    return res
+
+
 
 def conformer_screen(
         xyz_name: str,

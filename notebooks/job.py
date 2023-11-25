@@ -14,7 +14,7 @@ from linux_qm.qm.orca.orca import OrcaDriver
 if __name__=='__main__':
     # smi = 'COC1CN(C)C1'
     smi = 'CO'
-    n_jobs = sys.argv[1]
+    n_jobs = int(sys.argv[1])
     mol = conformer_pipeline(smi, n_jobs=n_jobs)
     conf = mol.GetConformer()
 

@@ -103,15 +103,11 @@ if __name__ == "__main__":
 
     num_jobs = 24
 
-    for cores_per_job in [1, 3, 4, 6, 8, 12, 24]:
+    for cores_per_job in [1, 3, 4, 6]:
         max_jobs = num_jobs // cores_per_job
         print('cores_per_job:', cores_per_job, 'max_jobs:', max_jobs)
         commands = [f"python job.py {cores_per_job}"] * num_jobs
         main(commands, max_parallel=max_jobs)
-
-    # cores_per_job = 1
-    # max_jobs = 24
-    # main(commands, max_parallel=max_jobs)
 
     # Example list of bash commands
 
