@@ -52,6 +52,8 @@ def conformer_pipeline(smi: str, n_jobs: int = 8):
     mol = _load_smiles3D(smi)
     xyz_fname = _create_input_file(mol)
 
+    logging.info('Conformer generation pipeline')
+
     _check_error(mol, xyz_fname, 'SMILES parsing')
 
     # pre-optimize
@@ -140,7 +142,8 @@ def xtb_optimize(
     # print(_cmd)
     subprocess.run(
         _cmd.split(' '),
-        stdout = None if verbose else subprocess.DEVNULL,
+        capture_output=True,
+        text=True
     )
 
 def conformer_gen(
@@ -170,7 +173,8 @@ def conformer_gen(
     # print(_cmd)
     subprocess.run(
         _cmd.split(' '),
-        stdout = None if verbose else subprocess.DEVNULL,
+        capture_output=True,
+        text=True
     )
 
 def conformer_screen(
@@ -189,7 +193,8 @@ def conformer_screen(
 
     subprocess.run(
         _cmd.split(' '),
-        stdout = None if verbose else subprocess.DEVNULL,
+        capture_output=True,
+        text=True
     )
 
 
@@ -280,13 +285,13 @@ def main():
 
 if __name__ == '__main__':
     # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
-    # smi = 'COC1CN(C(OC)COC)C1'
+    smi = 'COC1CN(C(OC)COC)C1'
     # smi = 'COC1CC(NC)C1'
-    smi = 'COC1CNC1'
+    # smi = 'COC1CNC1'
     # smi = 'O'
 
     # DEV
-    sys.argv[1:] = [smi,'-n 8', '-v']
+    sys.argv[1:] = [smi,'-n 12', '-v']
 
     main()
 

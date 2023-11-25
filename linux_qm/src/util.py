@@ -20,6 +20,7 @@ def SetPositions(conf, atom_positions):
         [2.225, -0.136, -0.399],
         [1.158, -0.319, 0.424],
         [-0.050, 0.113, 0.042],
+        [ 0.178,-0.956, 0.329],
     ]
     conf = mol.GetConformer()
     SetPositions(conf, atom_positions)

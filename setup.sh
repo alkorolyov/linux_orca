@@ -9,9 +9,10 @@ if [ ! -f Miniforge3-Linux-x86_64.sh ]; then
   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh  -q --show-progress
 fi
 bash Miniforge3-Linux-x86_64.sh -b
+rm Miniforge3-Linux-x86_64.sh
 source ~/miniforge3/etc/profile.d/conda.sh
 source ~/miniforge3/etc/profile.d/mamba.sh
-rm Miniforge3-Linux-x86_64.sh
+conda init
 conda config --set auto_activate_base false
 conda config --set ssl_verify false
 
@@ -19,12 +20,12 @@ conda config --set ssl_verify false
 mamba env create --name $env_name --file environment.yml
 conda activate $env_name
 
+# pip config and install
 pip config set global.trusted-host "pypi.org files.pythonhosted.org pypi.python.org"
-pip install cclib
+pip install cclib ipykernel
 
-# add to jupyter
-pip install ipykernel
-python -m ipykernel install --user --name $env_name --display-name "Python ($env_name)"
+# add to conda env to jupyter kernel
+python -m ipykernel install --user --name $env_name
 
 # molli
 # wget https://github.com/SEDenmarkLab/molli_firstgen/archive/refs/heads/main.zip -O molli.zip -q --show-progress
