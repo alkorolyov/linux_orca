@@ -6,11 +6,13 @@ dependencies:
   - python=3.10
   - pandas
   - numpy
+  - scikit-learn
+  - scipy
+  # chemistry
   - rdkit
   - xtb
   - crest
-  - scikit-learn
-  - scipy
+  - dbstep
   # for visualization
   - py3Dmol
   - notebook

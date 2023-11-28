@@ -4,6 +4,11 @@
 #####################################
 env_name="linux_qm"
 
+sudo apt-update
+
+# java
+sudo apt install default-jdk -y
+
 # miniforge
 if [ ! -f Miniforge3-Linux-x86_64.sh ]; then
   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh  -q --show-progress
@@ -20,9 +25,10 @@ conda config --set ssl_verify false
 mamba env create --name $env_name --file environment.yml
 conda activate $env_name
 
-# pip config and install
+# pip installs
+# moved it here because pip needs to be configures first
 pip config set global.trusted-host "pypi.org files.pythonhosted.org pypi.python.org"
-pip install cclib ipykernel
+pip install cclib ipykernel epam.indigo rxnmapper
 
 # add to conda env to jupyter kernel
 python -m ipykernel install --user --name $env_name

@@ -46,7 +46,6 @@ orca.geometry_optimization(conf)
 
 conf.GetDoubleProp('energy') # read energy
 for atom in conf.Get
-
 """
 
 class OrcaDriver:
@@ -58,7 +57,7 @@ class OrcaDriver:
         'calc_freq': False,
         'solvent': None,
         'geom_maxiter': 100,
-        'n_jobs': 16,
+        'n_jobs': 1,
         'mem_per_core': 2000,  # in MB
     }
 
@@ -66,12 +65,14 @@ class OrcaDriver:
             self,
             orca_path: str = '/opt/orca-5.0.3',
             omp_path: str = '/opt/openmpi-4.1.1',
+            janpa_path: str = '/home/ergot/install/janpa',
             options: dict = None,
             show_progress: bool = False,
             tmp_root: str = '.orca_tmp'
     ):
         self.orca_path = orca_path
         self.omp_path = omp_path
+        self.janpa_path = janpa_path
         self.options = {**self.options, **(options or {})}
         self.tmp_root = tmp_root
         self.set_orca_env()
@@ -162,6 +163,7 @@ class OrcaDriver:
 
         last_lines = '\n'.join(output.splitlines()[-10:])
         logging.debug(f"ORCA OUTPUT:\n{last_lines}\n")
+        # logging.debug(output)
 
         return output
 
@@ -172,6 +174,31 @@ class OrcaDriver:
         :param output: output from the orca run.
         :return: cclib parsed data
         """
+        # with open('orca_output', 'w') as f:
+        #     f.write(output)
+        _cmd = f"java -jar {self.janpa_path}/molden2molden.jar -i task -o output.PURE -fromorca3bf -orca3signs"
+
+        logging.debug(_cmd)
+        res = subprocess.run(
+            _cmd.split(' '),
+            capture_output=True,
+            text=True
+        )
+
+        if os.path.exists('output.PURE'):
+            logging.debug('Janpa molden OK')
+
+        _cmd = f"java -jar janpa.jar -i output.PURE"
+
+        res = subprocess.run(
+            _cmd.split(' '),
+            capture_output=True,
+            text=True
+        )
+
+        print(res.stdout)
+        # logging.debug(f'JANPA OUTPUT:\n{janpa_output}')
+
         return cclib.io.ccread(io.StringIO(output))
 
     def update_geometry(self, conf, cclib_data):
