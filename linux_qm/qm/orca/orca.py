@@ -93,8 +93,10 @@ class OrcaDriver:
         conf.SetBoolProp('success', success)
 
         if success:
-            self.update_properties(conf, data)
+            # self.update_properties(conf, data)
             logging.info(f'Success: {success}')
+
+        return data
 
     def geometry_optimization(self, conf: rdchem.Conformer):
         """
@@ -112,7 +114,7 @@ class OrcaDriver:
         conf.SetBoolProp('success', success)
 
         if success:
-            self.update_properties(conf, data)
+            # self.update_properties(conf, data)
             self.update_geometry(conf, data)
             logging.info(f'Success: {success}')
             logging.info(f'Num Iter: {len(data.atomcoords)}')
@@ -149,7 +151,7 @@ class OrcaDriver:
         fname = self._write_input(input_str)
 
         res = subprocess.run(
-            [self.orca_path + '/orca', fname, '--use-hwthread-cpus'],
+            [self.orca_path + '/orca', fname],  #, '--use-hwthread-cpus --allow-run-as-root'], # '--use-hwthread-cpus --allow-run-as-root'
             capture_output=True,
             text=True
         )
@@ -158,7 +160,8 @@ class OrcaDriver:
         if res.returncode != 0:
             raise Exception(f'Error running orca: \nINPUT {input_str}\nSTDOUT: {output}\nSTDERR:{error}')
 
-        logging.debug(f"ORCA OUTPUT:\n{output}\n")
+        last_lines = '\n'.join(output.splitlines()[-10:])
+        logging.debug(f"ORCA OUTPUT:\n{last_lines}\n")
 
         return output
 

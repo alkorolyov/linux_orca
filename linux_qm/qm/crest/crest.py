@@ -10,7 +10,7 @@ import datetime as dt
 
 from rdkit import Chem
 
-from linux_qm.src.util import _load_smiles3D, _create_tmp_dir
+from linux_qm.src.util import load_smiles3D, _create_tmp_dir
 
 logging.basicConfig(
     format='[%(asctime)s] [%(levelname)s] %(message)s',
@@ -43,64 +43,72 @@ CREST_TMP = '.crest_tmp'
 #     return constr
 
 
-def conformer_pipeline(smi: str, n_jobs: int = 8):
+def conformer_pipeline(smi: str,
+                       n_jobs: int = 8,
+                       cluster=True,
+                       screen=True):
+    logging.info('Conformer generation pipeline')
+
     # start dir
     saved_work_dir = os.getcwd()
     tmp_path = _create_tmp_dir(CREST_TMP)
     os.chdir(tmp_path)
 
-    mol = _load_smiles3D(smi)
-    xyz_fname = _create_input_file(mol)
+    logging.debug('SMILES parsing')
+    mol = load_smiles3D(smi)
+    fname = _create_input_file(mol)
 
-    logging.info('Conformer generation pipeline')
+    if not os.path.exists(fname):
+        raise FileNotFoundError(f'Failed SMILES parsing {smi}')
 
-    _check_error(mol, xyz_fname, 'SMILES parsing')
 
-    # pre-optimize
-    xtb_optimize(
-        xyz_fname,
+    fname = xtb_optimize(
+        fname,
         method="gff",
         n_jobs=n_jobs
     )
 
-    _check_error(mol, 'xtbopt.xyz', 'geometry optimization')
-
-    # generate conformers
-    res = conformer_gen(
-        'xtbopt.xyz',
+    fname = conformer_gen(
+        fname,
         method="gfnff",
         ewin=8.0,
-        mdlen=5.0,
+        mdlen='x1',          # 5.0,
         n_jobs=n_jobs,
     )
 
-    if not os.path.exists('crest_conformers.xyz'):
-        logging.error(f'STDOUT:\n{res.stdout}')
-        logging.error(f'STDERR:\n{res.stderr}')
-        raise ValueError('conformer generation failed')
-    _check_error(mol, 'crest_conformers.xyz', 'conformer generation')
+    # fname = conformer_cluster(
+    #     fname,
+    #     n_jobs=n_jobs
+    # )
 
-    # screen conformers
-    conformer_screen(
-        'crest_conformers.xyz',
-        method="gfn2",
-        ewin=12.0,
-        n_jobs=n_jobs,
-        verbose=False)
+    if screen:
+        fname = conformer_screen(
+            fname,
+            method="gfn2",
+            ewin=6.0,
+            n_jobs=n_jobs,
+            verbose=False)
 
-    _check_error(mol, 'crest_ensemble.xyz', 'conformer screen')
+    if cluster:
+        fname = conformer_cluster(
+            fname,
+            n_jobs=n_jobs,
+        )
 
-    add_conformers(mol, 'crest_ensemble.xyz')
+    logging.debug('CREST Finished')
+
+    mol.RemoveAllConformers()
+    add_conformers(mol, fname)
 
     # DEV
-    # original_mol = pickle.dumps(_load_smiles3D(smi))
+    # original_mol = pickle.dumps(load_smiles3D(smi))
     # conf_mol = pickle.dumps(mol, protocol=4)
     # conf_mol_5 = pickle.dumps(mol, protocol=5)
     # print('original_pkl', len(original_mol))
     # print('conf_pkl 4', len(conf_mol))
     # print('conf_pkl 5', len(conf_mol_5))
     # print('num conf:', mol.GetNumConformers())
-    # print('bytes per atom (conformers):', (len(conf_mol)- len(original_mol))/ (mol.GetNumConformers() + 1) / _load_smiles3D(smi).GetNumAtoms())
+    # print('bytes per atom (conformers):', (len(conf_mol)- len(original_mol))/ (mol.GetNumConformers() + 1) / load_smiles3D(smi).GetNumAtoms())
     # for conf in mol.GetConformers():
     #     print('3D:', conf.Is3D())
     #     print('energy:', conf.GetProp('energy'))
@@ -127,7 +135,6 @@ def _check_error(mol, filepath: str, stage: str):
         raise ValueError(f"Failed {stage} for '{mol.GetProp('smiles')}'")
 
 
-
 def xtb_optimize(
         xyz_name,
         method: str = "gff",
@@ -140,31 +147,45 @@ def xtb_optimize(
     """
     Attempt a geometry optimization with parameters specified
     """
+    logging.debug('XTB pre-optimize geometry')
 
     # command that will be used to execute xtb package
     _cmd = f"""xtb {xyz_name} --{method} --opt {crit} --cycles {maxiter} {"--input param.inp" if xtbinp else ""} -P {n_jobs}"""
     # print(_cmd)
-    subprocess.run(
+    res = subprocess.run(
         _cmd.split(' '),
         capture_output=True,
         text=True
     )
+
+    fname = 'xtbopt.xyz'
+
+    if not os.path.exists(fname):
+        raise FileNotFoundError(f'Failed xtb geometry preoptimization:\n {res.stderr}')
+
+    return fname
+
 
 def conformer_gen(
         xyz_name,
         scratch = False,
         method: str = "gfnff",
         ewin: float = 6.0,
-        mdlen: float = 15.0,
+        mdlen: str = 15.0,
         mddump: float = 250.0,
         vbdump: float = 1.0,
-        chk_topo = False,
-        constr_val_angles: list = [],
+        chk_topo = True,
+        constr_val_angles: list = None,
         force_const: float = 0.05,
         n_jobs: int = 8,
         verbose = False,
 ):
-    _cmd = f"""crest {xyz_name} {f'--scratch' if scratch else ''} -{method} -quick -ewin {ewin:0.4f} -mdlen {mdlen:0.4f} -mddump {mddump:0.4f} -vbdump {vbdump:0.4f} -T {n_jobs}"""
+    logging.debug('CREST generate conformers')
+
+    _cmd = f"""crest {xyz_name} {f'--scratch' if scratch else ''} -{method} -quick -ewin {ewin:0.4f} -mdlen {mdlen} -mddump {mddump:0.4f} -vbdump {vbdump:0.4f} -T {n_jobs}"""
+
+    if verbose:
+        print(_cmd)
 
     if not chk_topo:
         _cmd += " --noreftopo"
@@ -173,14 +194,70 @@ def conformer_gen(
     # if constr_val_angles:
     #     _cmd += f" -cinp {name}_constraint.inp -fc {force_const:0.4f}"
 
-    # print(_cmd)
-    # print(_cmd)
     res = subprocess.run(
         _cmd.split(' '),
         capture_output=True,
         text=True
     )
-    return res
+
+    fname = 'crest_conformers.xyz'
+    if not os.path.exists(fname):
+        logging.error(f'STDOUT:\n{res.stdout}')
+        logging.error(f'STDERR:\n{res.stderr}')
+        raise FileNotFoundError(f'CREST conformer generation failed:\n{res.stderr}')
+
+    count = len(_read_conformers(fname))
+    logging.debug(f'conformers: {count}')
+
+    return fname
+
+def conformer_cluster(
+        xyz_name,
+        num_clusters: int = None,
+        threshold: str = 'normal', # one of 'loose', 'normal', 'tight', 'vtight',
+        n_jobs: int = 8
+):
+    logging.debug('CREST clustering')
+
+    arg = num_clusters if num_clusters else threshold
+    _cmd = f"""crest --for {xyz_name} --cluster {arg} -T {n_jobs}"""
+
+    res = subprocess.run(
+        _cmd.split(' '),
+        capture_output=True,
+        text=True
+    )
+    fname = 'crest_clustered.xyz'
+
+    if not os.path.exists(fname):
+        logging.error(f'STDOUT:\n{res.stdout}')
+        logging.error(f'STDERR:\n{res.stderr}')
+        raise FileNotFoundError(f'CREST conformer generation faile:\n{res.stderr}')
+
+    count = len(_read_conformers(fname))
+    logging.debug(f'conformers: {count}')
+
+    return fname
+
+def conformer_opt(fname, n_jobs: int = 8, method = 'gfn2'):
+    _cmd = f"""crest --for {fname} --mdopt {method} -T {n_jobs}"""
+
+    res = subprocess.run(
+        _cmd.split(' '),
+        capture_output=True,
+        text=True
+    )
+    fname = 'crest_ensemble.xyz'
+
+    if not os.path.exists(fname):
+        logging.error(f'STDOUT:\n{res.stdout}')
+        logging.error(f'STDERR:\n{res.stderr}')
+        raise FileNotFoundError(f'CREST conformer optimization:\n{res.stderr}')
+
+    count = len(_read_conformers(fname))
+    logging.debug(f'conformers: {count}')
+
+    return fname
 
 
 
@@ -196,20 +273,30 @@ def conformer_screen(
     then pruned and sorted by energies. Useful in eliminating redundancies from deficiencies of GFN-FF, for instance.
     """
 
+    logging.debug('CREST conformer screen')
+
     _cmd = f"""crest -screen {xyz_name} -{method} -ewin {ewin} -T {n_jobs} """
 
-    subprocess.run(
+    if verbose:
+        print(_cmd)
+
+    res = subprocess.run(
         _cmd.split(' '),
         capture_output=True,
         text=True
     )
 
+    fname = 'crest_ensemble.xyz'
+    if not os.path.exists(fname):
+        raise FileNotFoundError(f'CREST conformer screen failed:\n{res.stderr}')
+
+    count = len(_read_conformers(fname))
+    logging.debug(f'conformers: {count}')
+
+    return fname
 
 
 def add_conformers(mol, ensemble_path: str):
-    # remove existing conf
-    mol.RemoveConformer(0)
-
     conformers = _read_conformers(ensemble_path)
 
     for conf in conformers:
@@ -276,8 +363,8 @@ def main():
     n_jobs = args.n_jobs
     verbose = args.verbose
 
-    # if verbose:
-    #     logging.getLogger().setLevel(logging.DEBUG)
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     start = time()
 
@@ -291,14 +378,14 @@ def main():
     return mol
 
 if __name__ == '__main__':
-    # smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
-    smi = 'COC1CN(C(OC)COC)C1'
+    smi = 'COC1=CC=CC([C@](O2)(CN3C=CN=C3)OC[C@H]2COC4=CC=CC=C4)=C1'
+    # smi = 'COC1CN(C(OC)COC)C1'
     # smi = 'COC1CC(NC)C1'
     # smi = 'COC1CNC1'
     # smi = 'O'
 
     # DEV
-    sys.argv[1:] = [smi,'-n 12', '-v']
+    sys.argv[1:] = [smi,'-n 24', '-v']
 
     main()
 

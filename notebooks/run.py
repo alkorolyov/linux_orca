@@ -38,7 +38,8 @@ async def run_job(job, semaphore):
         log_output(stdout, stderr)
         return 1
 
-async def event_loop(job_queue, max_parallel):
+
+async def main_loop(job_queue, max_parallel):
     semaphore = asyncio.Semaphore(max_parallel)
 
     # Start jobs
@@ -70,11 +71,11 @@ async def event_loop(job_queue, max_parallel):
 
         # # Break the loop if there is no more tasks and the job queue is empty
         if not tasks and job_queue.empty():
-            print('')
             break
 
     # Wait for all tasks to complete before exiting
     await asyncio.gather(*tasks)
+
 
 def main(commands, max_parallel):
     # Create a job queue with unique job IDs
@@ -83,29 +84,23 @@ def main(commands, max_parallel):
         job = {'cmd': cmd, 'job_id': job_id}
         job_queue.put_nowait(job)
     # Run jobs with a maximum `max_parallel` in parallel
-    asyncio.run(event_loop(job_queue, max_parallel=max_parallel))
-
+    asyncio.run(main_loop(job_queue, max_parallel=max_parallel))
 
 if __name__ == "__main__":
 
-    # parser = argparse.ArgumentParser(description='Description of your script')
-    # # Define command-line arguments
-    # parser.add_argument('input_file', help='Path to the input file')
+    logging.getLogger().setLevel(logging.INFO)
+
+    # num_jobs = 24
+    # cores_per_job = 4
     #
-    # # Parse the command-line arguments
-    # args = parser.parse_args()
-    #
-    # # read filepath containing list of commands to _run
-    # filepath = sys.argv[1]
-    # if filepath:
-    #     with open(filepath, 'r') as f:
-    #         commands = f.readlines()
+    # commands = [f"python job.py {cores_per_job}"] * num_jobs
+    # max_jobs = num_jobs // cores_per_job
+    # main(commands, max_parallel=max_jobs)
 
     num_jobs = 24
-
-    for cores_per_job in [1, 3, 4, 6]:
+    for cores_per_job in [1, 2, 3, 4]:
         max_jobs = num_jobs // cores_per_job
-        print('cores_per_job:', cores_per_job, 'max_jobs:', max_jobs)
+        print('\ncores_per_job:', cores_per_job, 'max_jobs:', max_jobs)
         commands = [f"python job.py {cores_per_job}"] * num_jobs
         main(commands, max_parallel=max_jobs)
 

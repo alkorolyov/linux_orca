@@ -6,8 +6,9 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 
 
-def _load_smiles3D(smi: str):
-    mol = Chem.AddHs(Chem.MolFromSmiles(smi))
+def load_smiles3D(smi: str):
+    mol = Chem.MolFromSmiles(smi)
+    mol = Chem.AddHs(mol)
     AllChem.EmbedMolecule(mol)  # 3D coordinates
     mol.SetProp("smiles", Chem.CanonSmiles(smi))
     return mol
@@ -52,9 +53,10 @@ def draw3Dconfs(mol, autoalign=True, confIds=None, size=(600, 400)):
             viewer.addModel(mol_block, "mol")
 
     viewer.setStyle({"stick": {}})
-    # viewer.setBackgroundColor("black")
+    viewer.setBackgroundColor("black")
     viewer.zoomTo()
     viewer.show()
+
 
 
 def _create_tmp_dir(tmp_root):
