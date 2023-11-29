@@ -58,6 +58,7 @@ class OrcaDriver:
         'opt_geom': False,
         'calc_nmr': False,
         'calc_freq': False,
+        'calc_npa': False,
         'solvent': None,
         'geom_maxiter': 100,
         'n_jobs': 1,
@@ -83,7 +84,7 @@ class OrcaDriver:
 
     # Main methods
 
-    def single_point(self, conf: rdchem.Conformer):
+    def single_point(self, conf: rdchem.Conformer, calc_npa=False):
         """
         Single point property calculation.
         On success updates properties of the conformer.
@@ -91,6 +92,7 @@ class OrcaDriver:
         :return: None
         """
         self.options['opt_geom'] = False
+        self.options['calc_npa'] = calc_npa
 
         data = self.run(conf)
 
@@ -103,7 +105,7 @@ class OrcaDriver:
 
         return data
 
-    def geometry_optimization(self, conf: rdchem.Conformer):
+    def geometry_optimization(self, conf: rdchem.Conformer, calc_npa=False):
         """
         Runs geometry optimization using self.options. On
         success - updates coordinates and properties of conformer
@@ -112,6 +114,7 @@ class OrcaDriver:
         start = time()
         logging.info(f"Method: {self.options['method']}")
         self.options['opt_geom'] = True
+        self.options['calc_npa'] = calc_npa
 
         data = self.run(conf)
 
@@ -171,6 +174,56 @@ class OrcaDriver:
 
         return output
 
+    def run_junpa(self, cclib_data):
+        jobname = cclib_data.metadata['input_file_name'].strip('.inp')
+        logging.debug(f'JANPA jobname:{jobname}')
+
+        _cmd = f"orca_2mkl {jobname} -molden"
+        logging.debug(_cmd)
+        res = subprocess.run(
+            _cmd.split(' '),
+            capture_output=True,
+            text=True
+        )
+
+        if res.returncode != 0 or not os.path.exists(f'{jobname}.molden.input'):
+            logging.debug(f"STDOUT: {res.stdout}")
+            logging.debug(f"STDERR: {res.stderr}")
+            return
+
+        # logging.debug(str([f for f in os.listdir('.')]))
+        # logging.debug(f'JANPA jobname:{jobname}')
+
+        _cmd = f"java -jar {self.janpa_path}/molden2molden.jar -i {jobname}.molden.input -o joutput.PURE -fromorca3bf -orca3signs"
+
+        logging.debug(_cmd)
+        res = subprocess.run(
+            _cmd.split(' '),
+            capture_output=True,
+            text=True
+        )
+
+        # logging.debug(str([f for f in os.listdir('.')]))
+        #
+        if res.returncode != 0 or not os.path.exists('joutput.PURE'):
+            logging.debug(f"STDOUT: {res.stdout}")
+            logging.debug(f"STDERR: {res.stderr}")
+            return
+
+        _cmd = f"java -jar {self.janpa_path}/janpa.jar -i joutput.PURE"
+
+        logging.debug(_cmd)
+        res = subprocess.run(
+            _cmd.split(' '),
+            capture_output=True,
+            text=True
+        )
+
+        # print(res.stdout)
+        # logging.debug(f'JANPA OUTPUT:\n{res.stdout}')
+        npa_charges = self._parse_janpa(res.stdout)
+        return npa_charges
+
     def parse(self, output: str):
         """
         Parses ORCA output. Additional parsing of other
@@ -183,54 +236,16 @@ class OrcaDriver:
 
         data = cclib.io.ccread(io.StringIO(output))
 
-        if not data.metadata['success']:
-            return data
+        logging.debug(f"CALC_NPA: {self.options['calc_npa']}")
 
-        _cmd = f"orca_2mkl {self.jobname} -molden"
-        logging.debug(_cmd)
-        res = subprocess.run(
-            _cmd.split(' '),
-            capture_output=True,
-            text=True
-        )
-
-        _cmd = f"java -jar {self.janpa_path}/molden2molden.jar -i {self.jobname}.molden.input -o joutput.PURE -fromorca3bf -orca3signs"
-
-        logging.debug(_cmd)
-        res = subprocess.run(
-            _cmd.split(' '),
-            capture_output=True,
-            text=True
-        )
-
-        logging.debug(str([f for f in os.listdir('.')]))
-
-        logging.debug(f"Janpa molden: {res.stdout}")
-        logging.debug(f"Janpa molden error: {res.stderr}")
-
-        if os.path.exists('output.PURE'):
-            logging.debug('Janpa molden OK')
-
-        _cmd = f"java -jar {self.janpa_path}/janpa.jar -i joutput.PURE"
-
-        res = subprocess.run(
-            _cmd.split(' '),
-            capture_output=True,
-            text=True
-        )
-
-        "Final electron populations and NPA charges:"
-
-        # print(res.stdout)
-        # logging.debug(f'JANPA OUTPUT:\n{res.stdout}')
-        npa_charges = self.parse_janpa(res.stdout)
-        data.atomcharges['npa'] = npa_charges
+        if self.options['calc_npa']:
+            data.atomcharges['npa'] = self.run_junpa(data)
         # print(self.parse_janpa(res.stdout))
         # logging.debug(repr(self.parse_janpa(res.stdout)))
 
         return data
 
-    def parse_janpa(self, output: str):
+    def _parse_janpa(self, output: str):
         lines = output.split('\n')
         lines = [l.strip() for l in lines if l.strip() != '']
         npa_lines = []
@@ -243,12 +258,13 @@ class OrcaDriver:
             if npa_found:
                 npa_lines.append(line)
 
-        logging.debug(npa_lines[1])
-        logging.debug(npa_lines[2])
+        # logging.debug(npa_lines[1])
+        # logging.debug(npa_lines[2])
         npa_charges = np.empty(len(npa_lines[3:]))
         for i, line in enumerate(npa_lines[3:]):
-            logging.debug(line.split('\t')[4])
-            npa_charges[i] = line.split('\t')[4]
+            # logging.debug(line.split('\t')[4])
+            charge = float(line.split('\t')[4])
+            npa_charges[i] = round(charge, 6)
         return npa_charges
 
 
