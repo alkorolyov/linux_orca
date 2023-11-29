@@ -185,11 +185,12 @@ class OrcaDriver:
             capture_output=True,
             text=True
         )
+        output, error = res.stdout, res.stderr
 
-        if res.returncode != 0 or not os.path.exists(f'{jobname}.molden.input'):
-            logging.debug(f"STDOUT: {res.stdout}")
-            logging.debug(f"STDERR: {res.stderr}")
-            return
+        if res.returncode != 0:
+            raise Exception(f'Error running {_cmd}: \nSTDOUT: {output}\nSTDERR:{error}')
+        if not os.path.exists(f'{jobname}.molden.input'):
+            raise FileNotFoundError(f'Missing file {jobname}.molden.input: \nSTDOUT: {output}\nSTDERR:{error}')
 
         # logging.debug(str([f for f in os.listdir('.')]))
         # logging.debug(f'JANPA jobname:{jobname}')
@@ -202,13 +203,12 @@ class OrcaDriver:
             capture_output=True,
             text=True
         )
+        output, error = res.stdout, res.stderr
 
-        # logging.debug(str([f for f in os.listdir('.')]))
-        #
-        if res.returncode != 0 or not os.path.exists('joutput.PURE'):
-            logging.debug(f"STDOUT: {res.stdout}")
-            logging.debug(f"STDERR: {res.stderr}")
-            return
+        if res.returncode != 0:
+            raise Exception(f'Error running {_cmd}: \nSTDOUT: {output}\nSTDERR:{error}')
+        if not os.path.exists('joutput.PURE'):
+            raise FileNotFoundError(f'Missing file joutput.PURE: \nSTDOUT: {output}\nSTDERR:{error}')
 
         _cmd = f"java -jar {self.janpa_path}/janpa.jar -i joutput.PURE"
 
@@ -218,10 +218,12 @@ class OrcaDriver:
             capture_output=True,
             text=True
         )
+        output, error = res.stdout, res.stderr
 
-        # print(res.stdout)
-        # logging.debug(f'JANPA OUTPUT:\n{res.stdout}')
-        npa_charges = self._parse_janpa(res.stdout)
+        if res.returncode != 0:
+            raise Exception(f'Error running {_cmd}: \nSTDOUT: {output}\nSTDERR:{error}')
+
+        npa_charges = self._parse_janpa(output)
         return npa_charges
 
     def parse(self, output: str):
@@ -262,7 +264,7 @@ class OrcaDriver:
         # logging.debug(npa_lines[2])
         npa_charges = np.empty(len(npa_lines[3:]))
         for i, line in enumerate(npa_lines[3:]):
-            # logging.debug(line.split('\t')[4])
+            logging.debug(line.split('\t')[4])
             charge = float(line.split('\t')[4])
             npa_charges[i] = round(charge, 6)
         return npa_charges
