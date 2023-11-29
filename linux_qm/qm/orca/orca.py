@@ -1,13 +1,16 @@
 from uuid import uuid4
 import logging
 import cclib
+import re
 import os
 import shutil
 from time import time
 import io
 import subprocess
+import numpy as np
 from rdkit.Chem import rdchem
 from linux_qm.src.util import SetPositions
+
 
 """
 Main ORCA driver.
@@ -60,12 +63,13 @@ class OrcaDriver:
         'n_jobs': 1,
         'mem_per_core': 2000,  # in MB
     }
+    jobname: str = 'task'
 
     def __init__(
             self,
             orca_path: str = '/opt/orca-5.0.3',
             omp_path: str = '/opt/openmpi-4.1.1',
-            janpa_path: str = '/home/ergot/install/janpa',
+            janpa_path: str = '/home/ergot/linux_qm/install/janpa',
             options: dict = None,
             show_progress: bool = False,
             tmp_root: str = '.orca_tmp'
@@ -149,10 +153,10 @@ class OrcaDriver:
         :param input_str:
         :return:
         """
-        fname = self._write_input(input_str)
+        self._write_input(input_str)
 
         res = subprocess.run(
-            [self.orca_path + '/orca', fname],  #, '--use-hwthread-cpus --allow-run-as-root'], # '--use-hwthread-cpus --allow-run-as-root'
+            [self.orca_path + '/orca', self.jobname + '.inp'],  #, '--use-hwthread-cpus --allow-run-as-root'], # '--use-hwthread-cpus --allow-run-as-root'
             capture_output=True,
             text=True
         )
@@ -176,7 +180,21 @@ class OrcaDriver:
         """
         # with open('orca_output', 'w') as f:
         #     f.write(output)
-        _cmd = f"java -jar {self.janpa_path}/molden2molden.jar -i task -o output.PURE -fromorca3bf -orca3signs"
+
+        data = cclib.io.ccread(io.StringIO(output))
+
+        if not data.metadata['success']:
+            return data
+
+        _cmd = f"orca_2mkl {self.jobname} -molden"
+        logging.debug(_cmd)
+        res = subprocess.run(
+            _cmd.split(' '),
+            capture_output=True,
+            text=True
+        )
+
+        _cmd = f"java -jar {self.janpa_path}/molden2molden.jar -i {self.jobname}.molden.input -o joutput.PURE -fromorca3bf -orca3signs"
 
         logging.debug(_cmd)
         res = subprocess.run(
@@ -185,10 +203,15 @@ class OrcaDriver:
             text=True
         )
 
+        logging.debug(str([f for f in os.listdir('.')]))
+
+        logging.debug(f"Janpa molden: {res.stdout}")
+        logging.debug(f"Janpa molden error: {res.stderr}")
+
         if os.path.exists('output.PURE'):
             logging.debug('Janpa molden OK')
 
-        _cmd = f"java -jar janpa.jar -i output.PURE"
+        _cmd = f"java -jar {self.janpa_path}/janpa.jar -i joutput.PURE"
 
         res = subprocess.run(
             _cmd.split(' '),
@@ -196,10 +219,39 @@ class OrcaDriver:
             text=True
         )
 
-        print(res.stdout)
-        # logging.debug(f'JANPA OUTPUT:\n{janpa_output}')
+        "Final electron populations and NPA charges:"
 
-        return cclib.io.ccread(io.StringIO(output))
+        # print(res.stdout)
+        # logging.debug(f'JANPA OUTPUT:\n{res.stdout}')
+        npa_charges = self.parse_janpa(res.stdout)
+        data.atomcharges['npa'] = npa_charges
+        # print(self.parse_janpa(res.stdout))
+        # logging.debug(repr(self.parse_janpa(res.stdout)))
+
+        return data
+
+    def parse_janpa(self, output: str):
+        lines = output.split('\n')
+        lines = [l.strip() for l in lines if l.strip() != '']
+        npa_lines = []
+        npa_found = False
+        for line in lines:
+            if 'Final electron populations and NPA charges' in line:
+                npa_found = True
+            if 'Angular momentum contributions of the total atomic population' in line:
+                break
+            if npa_found:
+                npa_lines.append(line)
+
+        logging.debug(npa_lines[1])
+        logging.debug(npa_lines[2])
+        npa_charges = np.empty(len(npa_lines[3:]))
+        for i, line in enumerate(npa_lines[3:]):
+            logging.debug(line.split('\t')[4])
+            npa_charges[i] = line.split('\t')[4]
+        return npa_charges
+
+
 
     def update_geometry(self, conf, cclib_data):
         SetPositions(conf, cclib_data.atomcoords[-1])
@@ -286,10 +338,8 @@ class OrcaDriver:
         return input_str
 
     def _write_input(self, content: str):
-        fname = 'task.inp'
-        with open(fname, 'w') as f:
+        with open(self.jobname + '.inp', 'w') as f:
             f.write(content)
-        return fname
     #
     # def write_output(self, content: str):
     #     fname = 'output'
