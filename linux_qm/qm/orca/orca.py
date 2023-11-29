@@ -91,6 +91,7 @@ class OrcaDriver:
         :param conf: rdkit Conformer
         :return: None
         """
+        logging.info(f"Method: {self.options['method']}")
         self.options['opt_geom'] = False
         self.options['calc_npa'] = calc_npa
 

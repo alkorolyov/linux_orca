@@ -52,6 +52,8 @@ def draw_reaction_smi(rxn_smi: str, highlight: list = None, product_only=False):
 
 
 def draw_reacting_mapnums(rxn_smi, verbose=True):
+    if not rxn_smi:
+        return
     rxn = rdChemReactions.ReactionFromSmarts(rxn_smi, useSmiles=True)
     rxn.Initialize()
 
