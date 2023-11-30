@@ -54,31 +54,37 @@ def orca_calculation(conf):
     return data
 
 def gen_amine_electronic(rxn_smi):
-    # try rxn_mapper:
-    rxn_smi = rxn_map(rxn_smi)
+    try:
+        # try rxn_mapper:
+        rxn_smi = rxn_map(rxn_smi)
 
-    # load rxn
-    rxn = rdChemReactions.ReactionFromSmarts(rxn_smi, useSmiles=True)
-    rxn.Initialize()
+        # load rxn
+        rxn = rdChemReactions.ReactionFromSmarts(rxn_smi, useSmiles=True)
+        rxn.Initialize()
 
-    # get reactants
-    amine, acid = rxn.GetReactants()
-    amine_raids = get_amine_atoms(amine, rxn.GetReactingAtoms()[0][0])
-    logging.debug(f'Amine atom ids: {amine_raids}')
+        # get reactants
+        amine, acid = rxn.GetReactants()
+        amine_raids = get_amine_atoms(amine, rxn.GetReactingAtoms()[0][0])
+        logging.debug(f'Amine atom ids: {amine_raids}')
 
-    logging.info(f"Heavy Atom Count: {amine.GetNumHeavyAtoms()}")
+        logging.info(f"Heavy Atom Count: {amine.GetNumHeavyAtoms()}")
 
-    mol = load_smiles3D(Chem.MolToSmiles(amine), opt=True)
+        mol = load_smiles3D(Chem.MolToSmiles(amine), opt=True)
 
-    # qm calculation
-    data = orca_calculation(mol.GetConformer())
+        # qm calculation
+        data = orca_calculation(mol.GetConformer())
 
-    charges = np.hstack([
-        data.atomcharges['mulliken'][amine_raids],
-        data.atomcharges['lowdin'][amine_raids],
-        # data.atomcharges['npa'][amine_raids],
-    ])
-    homo = data.moenergies[0][data.homos[0]]
-    lumo = data.moenergies[0][data.homos[0] + 1]
+        charges = np.hstack([
+            data.atomcharges['mulliken'][amine_raids],
+            data.atomcharges['lowdin'][amine_raids],
+            # data.atomcharges['npa'][amine_raids],
+        ])
+        homo = data.moenergies[0][data.homos[0]]
+        lumo = data.moenergies[0][data.homos[0] + 1]
 
-    return np.hstack([charges, homo, lumo]).round(6)
+        return np.hstack([charges, homo, lumo]).round(6)
+
+    except Exception as e:
+        logging.warning(f"{type(e).__name__}: {e} for rxn_smi: {rxn_smi}")
+        return None
+

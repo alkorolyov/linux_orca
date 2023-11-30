@@ -1,0 +1,124 @@
+SMARTS,Description
+[C](=[O])(-[OH])-[*]~[*+],CA - * - positive charge
+[C](=[O])(-[OH])-[*]~[*]~[*+],CA - * - * -  positive charge
+[C](=[O])(-[OH])-[*]~[*-],CA - * - negative charge
+[C](=[O])(-[OH])-[*]~[*]~[*-],CA - * - * - negative charge
+[C](=[O])(-[OH])-[R]1~[R]~[R]1,CA - ring of size 3
+[C](=[O])(-[OH])-[R]1~[R]~[R]~[R]1,CA - ring of size 4
+[C](=[O])(-[OH])-[R]1~[R]~[R]~[R]~[R]1,CA - ring of size 5
+[C](=[O])(-[OH])-[R]1~[R]~[R]~[R]~[R]~[R]1,CA - ring of size 6
+[OH]-[C](=[O])-[R]1~[R]~[R]~[R]~[R]~[R]~[R]1,CA - ring of size 7
+[OH]-[C](=[O])-[*]-[R]1~[R]~[R]1,CA - * - ring of size 3
+[OH]-[C](=[O])-[*]-[R]1~[R]~[R]~[R]1,CA - * - ring of size 4
+[OH]-[C](=[O])-[*]-[R]1~[R]~[R]~[R]~[R]1,CA - * - ring of size 5
+[OH]-[C](=[O])-[*]-[R]1~[R]~[R]~[R]~[R]~[R]1,CA - * - ring of size 6
+[OH]-[C](=[O])-[*]-[R]1~[R]~[R]~[R]~[R]~[R]~[R]1,CA - * - ring of size 7
+[OH]-[C](=[O])-[a&R],CA - aromatic ring
+[OH]-[C](=[O])-[!R]~[a&R],CA - * - aromatic ring
+[OH]-[C](=[O])-[!R]~[!R]~[a&R],CA - * - * - aromatic ring
+[OH]-[C](=[O])-[A&R],CA - aliphatic ring
+[OH]-[C](=[O])-[!R]~[A&R],CA - * - aliphatic ring
+[OH]-[C](=[O])-[!R]~[!R]~[A&R],CA - * - * - aliphatic ring
+"[OH]-[C](=[O])~[#7,#8,#15,#16]","CA - (N, O, S, P); any"
+"[OH]-[C](=[O])~[*]~[#7,#8,#15,#16]","CA - * - (N, O, S, P); any"
+"[OH]-[C](=[O])~[*]~[*]~[#7,#8,#15,#16]","CA - * - * - (N, O, S, P); any"
+[OH]-[C](=[O])-[CH3],CA - CH3
+[OH]-[C](=[O])-[CH2]-[CH3],CA - CH2 - CH3
+[OH]-[C](=[O])-[CH2],CA - CH2
+[OH]-[C](=[O])-[CH2]-[CH2],CA - (CH2)2
+[OH]-[C](=[O])-[CH2]-[CH2]-[CH3],CA - (CH2)2 - CH3
+[OH]-[C](=[O])-[CH2]-[CH2]-[CH2],CA - (CH2)3
+[OH]-[C](=[O])-[CH](-[C])-[C],CA - izopropyl scaffold
+[OH]-[C](=[O])-[C](-[C])(-[C])-[C],CA - tert-butyl scaffold
+[OH]-[C](=[O])-[*]=[*],CA - conjugated double bond
+[OH]-[C](=[O])-[*]#[*],CA - conjugated triple bond
+[OH]-[C](=[O])-[*]~[*]=[*],CA - * - double bond
+[OH]-[C](=[O])-[*]~[*]#[*],CA - * - triple bond
+[OH]-[C](=[O])-[X4],CA - atom with 4 neighbors
+[OH]-[C](=[O])-[X3],CA - atom with 3 neighbors
+[OH]-[C](=[O])-[X2],CA - atom with 2 neighbors
+[OH]-[C](=[O])-[*]~[X4],CA - * - atom with 4 neighbors
+[OH]-[C](=[O])-[*]~[X3],CA - * - atom with 3 neighbors
+[OH]-[C](=[O])-[*]~[X2],CA - * - atom with 2 neighbors
+[OH]-[C](=[O])-[N],CA - N
+[OH]-[C](=[O])-[O],CA - O
+[OH]-[C](=[O])-[*]-[N],CA - * - N
+[OH]-[C](=[O])-[*]-[O],CA - * - O
+[OH]-[C](=[O])-[C]=[O],CA - carbonyl
+[OH]-[C](=[O])-[C](=[O])-[O],CA - carboxyl
+[OH]-[C](=[O])-[C](=[O])-[N],CA - amide
+[OH]-[C](=[O])-[*]-[C]=[O],CA - * - carbonyl
+[OH]-[C](=[O])-[*]-[C](=[O])-[O],CA - * -  carboxyl
+[OH]-[C](=[O])-[*]-[C](=[O])-[N],CA - * - amide
+[OH]-[C](=[O])-[*]-[F],CA - * - F
+[OH]-[C](=[O])-[*]-[Cl],CA - * - Cl
+[OH]-[C](=[O])-[*]-[Br],CA - * - Br
+[OH]-[C](=[O])-[*]-[I],CA - * - I
+[OH]-[C](=[O])-[*]~[*]-[F],CA - * - * - F
+[OH]-[C](=[O])-[*]~[*]-[Cl],CA - * - * - Cl
+[OH]-[C](=[O])-[*]~[*]-[Br],CA - * - * - Br
+[OH]-[C](=[O])-[*]~[*]-[I],CA - * - * - I
+[OH]-[C](=[O])-[*]~[*]~[*]-[F],CA - * - * - * - F
+[OH]-[C](=[O])-[*]~[*]~[*]-[Cl],CA - * - * - * - Cl
+[OH]-[C](=[O])-[*]~[*]~[*]-[Br],CA - * - * - * - Br
+[OH]-[C](=[O])-[*]~[*]~[*]-[I],CA - * - * - * - I
+"[OH]-[C](=[O])-[#7,#8,#15,#16]","CA - {N, O, P, S}"
+"[OH]-[C](=[O])-[*]~[#7,#8,#15,#16]","CA - * - {N, O, P, S}"
+"[OH]-[C](=[O])-[*]~[*]~[#7,#8,#15,#16]","CA - * - * - {N, O, P, S}"
+"[OH]-[C](=[O])-[*]~[*]~[*]~[#7,#8,#15,#16]","CA - * - * - * -{N, O, P, S}"
+[OH]-[C](=[O])-a1aaaa1,CA - 5-membered aromatic ring
+[OH]-[C](=[O])-a1aaaaa1,CA - 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaaaaa1,CA - 7-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[F])aa1,F in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[F])aaa1,F in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[Cl])aa1,Cl in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[Cl])aaa1,Cl in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[Br])aa1,Br in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[Br])aaa1,Br in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[I])aa1,I in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[I])aaa1,I in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[C])aa1,methyl in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[C])aaa1,methyl in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[N])aa1,N in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[N])aaa1,N in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[O])aa1,O in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[O])aaa1,O in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[N+](=[O])-[O-])aa1,NO2 in -meta position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[N+](=[O])-[O-])aaa1,NO2 in -orto position across 5-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[F])aa1,F in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[F])aaa1,F in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[F])aaaa1,F in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[Cl])aa1,Cl in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[Cl])aaa1,Cl in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[Cl])aaaa1,Cl in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[Br])aa1,Br in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[Br])aaa1,Br in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[Br])aaaa1,Br in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[I])aa1,I in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[I])aaa1,I in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[I])aaaa1,I in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[C])aa1,methyl in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[C])aaa1,methyl in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[C])aaaa1,methyl in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[N])aa1,N in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[N])aaa1,N in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[N])aaaa1,N in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[O])aa1,O in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[O])aaa1,O in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[O])aaaa1,O in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aaa(-[N+](=[O])-[O-])aa1,NO2 in -para position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1aa(-[N+](=[O])-[O-])aaa1,NO2 in -meta position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1a(-[N+](=[O])-[O-])aaaa1,NO2 in -orto position across 6-membered aromatic ring
+[OH]-[C](=[O])-a1naaa1,N - alpha aromatic N in aromatic 5-membered aromatic ring
+[OH]-[C](=[O])-a1anaa1,N - beta aromatic N in aromatic 5-membered aromatic ring
+[OH]-[C](=[O])-a1oaaa1,N - alpha aromatic O in aromatic 5-membered aromatic ring
+[OH]-[C](=[O])-a1aoaa1,N - beta aromatic O in aromatic 5-membered aromatic ring
+[OH]-[C](=[O])-a1saaa1,N - alpha aromatic S in aromatic 5-membered aromatic ring
+[OH]-[C](=[O])-a1asaa1,N - beta aromatic S in aromatic 5-membered aromatic ring
+[OH]-[C](=[O])-a1naaaa1,N - ortho aromatic N in aromatic 6-membered aromatic ring
+[OH]-[C](=[O])-a1anaaa1,N - meta aromatic N in aromatic 6-membered aromatic ring
+[OH]-[C](=[O])-a1aanaa1,N - para aromatic N in aromatic 6-membered aromatic ring
+"[OH]-[C](=[O])-a1a(-[CH3])aaaa1",CH3 in -orto position across 6-membered aromatic ring
+"[OH]-[C](=[O])-a1a(-[CH2][CH2])aaaa1",CH2-CH2 in -orto position across 6-membered aromatic ring
+"[OH]-[C](=[O])-a1a(-[CH]([C])[C])aaaa1",iPr-scaffold in -orto position across 6-membered aromatic ring
+"[OH]-[C](=[O])-a1a(-[C]([C])([C])[C])aaaa1",tBu-scaffold in -orto position across 6-membered aromatic ring
