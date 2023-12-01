@@ -30,7 +30,8 @@ mv orca_5_0_3_linux_x86-64_shared_openmpi411 /opt/orca-5.0.3
 
 # add to path
 source orcainit
-cp orcainit ~/
 
-# test _run
+# test run
 orca test.inp
+
+echo "Add orcainit to .bashrc"

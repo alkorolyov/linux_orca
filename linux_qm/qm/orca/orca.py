@@ -270,8 +270,6 @@ class OrcaDriver:
             npa_charges[i] = round(charge, 6)
         return npa_charges
 
-
-
     def update_geometry(self, conf, cclib_data):
         SetPositions(conf, cclib_data.atomcoords[-1])
 

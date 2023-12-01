@@ -1,10 +1,85 @@
 import os
+import re
 from uuid import uuid4
+
 
 import py3Dmol
 from rdkit import Chem
-from rdkit.Chem import AllChem
+from rdkit.Chem import AllChem, rdChemReactions
+from indigo import Indigo
+indigo = Indigo()
 
+# from rxnmapper import BatchedMapper
+# rxn_mapper = BatchedMapper(batch_size=8)
+
+
+def check_amide_mapping(rxn_smi):
+    try:
+        rxn = rdChemReactions.ReactionFromSmarts(rxn_smi, useSmiles=True)
+        rxn.Initialize()
+        mapped_atoms = rxn.GetReactingAtoms()
+    except:
+        return False
+
+    if len(mapped_atoms) != 2:
+        return False
+    if len(mapped_atoms[0]) != 1:
+        return False
+    if len(mapped_atoms[1]) != 2:
+        return False
+
+    if len(rxn.GetProducts()) > 1:
+        return False
+
+    if len(rxn.GetReactants()) != 2:
+        return False
+
+    amine, acid = rxn.GetReactants()
+
+    # check for amine reacting atom
+    amine_atom = amine.GetAtomWithIdx(mapped_atoms[0][0])
+    if amine_atom.GetSymbol() != 'N':
+        return False
+
+    # check for neighbors of N in amine
+    for nei in amine_atom.GetNeighbors():
+        if nei.GetSymbol() not in ['H', 'C']:
+            return False
+
+
+    # check acid
+    acid_ids = mapped_atoms[1]
+    carbon_ids = [i for i in acid_ids if acid.GetAtomWithIdx(i).GetSymbol() == 'C']
+    oxygen_ids = [i for i in acid_ids if acid.GetAtomWithIdx(i).GetSymbol() == 'O']
+    others = [i for i in acid_ids if acid.GetAtomWithIdx(i).GetSymbol() not in ['C', 'O']]
+
+    if others:
+        return False
+    if len(carbon_ids) != 1:
+        return False
+    if len(oxygen_ids) != 1:
+        return False
+
+    # other than acids
+    carbon = acid.GetAtomWithIdx(carbon_ids[0])
+    for nei in carbon.GetNeighbors():
+        if nei.GetSymbol() not in ['O', 'C']:
+            return False
+
+    return True
+
+def ind_rxn_map(rxn_smi):
+    try:
+        ind_rxn = indigo.loadReaction(rxn_smi)
+        ind_rxn.automap("discard")
+        return ind_rxn.smiles()
+    except:
+        return None
+
+# def rxn_map(rxn_smi):
+#     clear_smi = re.sub(r':\d+','',  rxn_smi)
+#     mapped_rxn = list(rxn_mapper.map_reactions([clear_smi]))[0]
+#     return mapped_rxn
 
 def load_smiles3D(smi: str, opt=False, num_conf=1):
     mol = Chem.MolFromSmiles(smi)

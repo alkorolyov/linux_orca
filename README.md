@@ -12,6 +12,6 @@ Installation of orca in Linux
    echo "source ~/orcainit" >> ~/.bashrc
    ```
 
-3) Test the installation by running test jobs
+3) Test the installation
 
    `orca test.orca --use-hwthread-cpus`
