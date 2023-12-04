@@ -9,8 +9,7 @@ import io
 import subprocess
 import numpy as np
 from rdkit.Chem import rdchem
-from linux_qm.src.util import SetPositions
-
+from linux_qm.qm.driver import set_positions
 
 """
 Main ORCA driver.
@@ -44,11 +43,9 @@ AllChem.EmbedMolecule(mol)
 # additional conformer generation pipeline may be added
 
 conf = mol.GetConformer()
-
 orca.geometry_optimization(conf)
-
-conf.GetDoubleProp('energy') # read energy
-for atom in conf.Get
+conf.GetDoubleProp('energy') # get optimized energy
+atom_pos = conf.GetPositions() # get optimized geometry
 """
 
 class OrcaDriver:
@@ -135,7 +132,7 @@ class OrcaDriver:
 
     def run(self, conf: rdchem.Conformer):
         """
-        Runs isolated orca calculation in a separete tmp dir which is cleared
+        Runs isolated orca calculation in a separate tmp dir which is cleared
         after the run.
         Creates tmp dir, runs the calculation, parses the data, cleans the tmp dir.
         :param conf: rdkit Conformer
@@ -271,7 +268,7 @@ class OrcaDriver:
         return npa_charges
 
     def update_geometry(self, conf, cclib_data):
-        SetPositions(conf, cclib_data.atomcoords[-1])
+        set_positions(conf, cclib_data.atomcoords[-1])
 
     def update_properties(self, conf, cclib_data):
         conf.SetDoubleProp('energy', cclib_data.scfenergies[-1])
@@ -283,15 +280,21 @@ class OrcaDriver:
         Sets up necessary env variables
         :return:
         """
-        if self.orca_path not in os.environ['PATH']:
-            os.environ['PATH'] = f"{self.orca_path}:{os.environ.get('PATH')}"
-            os.environ['LD_LIBRARY_PATH'] = f"{self.orca_path}:{os.environ.get('LD_LIBRARY_PATH', '')}"
-        if self.omp_path not in os.environ['PATH']:
-            os.environ['PATH'] = f"{self.omp_path}/bin:{os.environ['PATH']}"
-            os.environ['LD_LIBRARY_PATH'] = f"{self.omp_path}/lib:{os.environ['LD_LIBRARY_PATH']}"
+        PATH = os.environ.get('PATH', '')
+        LD_LIBRARY_PATH = os.environ.get('LD_LIBRARY_PATH', '')
+
+        if self.orca_path not in PATH:
+            PATH = f"{self.orca_path}:{PATH}"
+            LD_LIBRARY_PATH = f"{self.orca_path}:{LD_LIBRARY_PATH}"
+        if self.omp_path not in PATH:
+            PATH = f"{self.omp_path}/bin:{PATH}"
+            LD_LIBRARY_PATH = f"{self.omp_path}/lib:{LD_LIBRARY_PATH}"
 
         # # intel MKL
         # os.environ['LD_LIBRARY_PATH'] = f"/usr/lib/x86_64-linux-gnu:{os.environ['LD_LIBRARY_PATH']}"
+
+        os.environ['PATH'] = PATH
+        os.environ['LD_LIBRARY_PATH'] = LD_LIBRARY_PATH
 
     def _create_tmp_dir(self):
         uid = str(uuid4())

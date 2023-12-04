@@ -9,6 +9,7 @@ from time import time
 import datetime as dt
 
 from rdkit import Chem
+from rdkit.Chem import rdchem
 
 from linux_qm.src.util import load_smiles3D, _create_tmp_dir
 
@@ -120,7 +121,7 @@ def conformer_pipeline(smi: str,
     return mol
 
 
-def _create_input_file(mol: Chem.rdchem.Mol):
+def _create_input_file(mol: rdchem.Mol):
     fname = 'input.xyz'
     xyz = Chem.MolToXYZBlock(mol)
     with open('input.xyz', 'w') as f:
@@ -211,6 +212,7 @@ def conformer_gen(
 
     return fname
 
+
 def conformer_cluster(
         xyz_name,
         num_clusters: int = None,
@@ -239,6 +241,7 @@ def conformer_cluster(
 
     return fname
 
+
 def conformer_opt(fname, n_jobs: int = 8, method = 'gfn2'):
     _cmd = f"""crest --for {fname} --mdopt {method} -T {n_jobs}"""
 
@@ -258,7 +261,6 @@ def conformer_opt(fname, n_jobs: int = 8, method = 'gfn2'):
     logging.debug(f'conformers: {count}')
 
     return fname
-
 
 
 def conformer_screen(

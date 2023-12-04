@@ -1,5 +1,4 @@
 import os
-import re
 from uuid import uuid4
 
 
@@ -11,6 +10,16 @@ indigo = Indigo()
 
 # from rxnmapper import BatchedMapper
 # rxn_mapper = BatchedMapper(batch_size=8)
+
+
+
+def ind_rxn_map(rxn_smi):
+    try:
+        ind_rxn = indigo.loadReaction(rxn_smi)
+        ind_rxn.automap("discard")
+        return ind_rxn.smiles()
+    except:
+        return None
 
 
 def check_amide_mapping(rxn_smi):
@@ -67,15 +76,6 @@ def check_amide_mapping(rxn_smi):
             return False
 
     return True
-
-def ind_rxn_map(rxn_smi):
-    try:
-        ind_rxn = indigo.loadReaction(rxn_smi)
-        ind_rxn.automap("discard")
-        return ind_rxn.smiles()
-    except:
-        return None
-
 # def rxn_map(rxn_smi):
 #     clear_smi = re.sub(r':\d+','',  rxn_smi)
 #     mapped_rxn = list(rxn_mapper.map_reactions([clear_smi]))[0]
@@ -92,26 +92,6 @@ def load_smiles3D(smi: str, opt=False, num_conf=1):
     mol.SetProp("smiles", Chem.CanonSmiles(smi))
     return mol
 
-
-def SetPositions(conf, atom_positions):
-    """
-    Example usage:
-    atom_positions = [
-        [2.225, -0.136, -0.399],
-        [1.158, -0.319, 0.424],
-        [-0.050, 0.113, 0.042],
-        [ 0.178,-0.956, 0.329],
-    ]
-    conf = mol.GetConformer()
-    SetPositions(conf, atom_positions)
-
-    conf: RDKit conformer
-    atom_positions: 2D array of x, y, z coordinates of each atom
-    """
-
-    for i in range(conf.GetNumAtoms()):
-        xyz = atom_positions[i]
-        conf.SetAtomPosition(i, xyz)
 
 def draw3Dconfs(mol, autoalign=True, confIds=None, size=(600, 400)):
     if autoalign:
@@ -135,8 +115,6 @@ def draw3Dconfs(mol, autoalign=True, confIds=None, size=(600, 400)):
     # viewer.setBackgroundColor("black")
     viewer.zoomTo()
     viewer.show()
-
-
 
 def _create_tmp_dir(tmp_root):
     uid = str(uuid4())

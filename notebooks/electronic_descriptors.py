@@ -55,15 +55,15 @@ def main():
     print('Invalid mappings:', (~rxn_ok).sum())
     print('Reactions:', len(df))
 
-    # print('Amine descriptor calculation:')
-    # dds = dd.from_pandas(df.rxn_smi, npartitions=128)
-    # amine_descr = dds.apply(get_amine_electronic,
-    #                         # args=(query,),
-    #                         meta=dds).compute(scheduler='processes')
-    # df['amine_electronic_descr'] = amine_descr
-    # print('Errors:', amine_descr.isna().sum())
-    #
-    # df.to_pickle('../data/slv_amides/amine_descriptor.pkl')
+    print('Amine descriptor calculation:')
+    dds = dd.from_pandas(df.rxn_smi, npartitions=128)
+    amine_descr = dds.apply(get_amine_electronic,
+                            # args=(query,),
+                            meta=dds).compute(scheduler='processes')
+    df['amine_electronic_descr'] = amine_descr
+    print('Errors:', amine_descr.isna().sum())
+
+    df.to_pickle('../data/slv_amides/amine_descriptor.pkl')
 
     print('Acid descriptor calculation:')
     dds = dd.from_pandas(df.rxn_smi, npartitions=128)

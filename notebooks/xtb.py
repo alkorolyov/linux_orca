@@ -7,7 +7,8 @@ from copy import deepcopy
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem.rdDistGeom import EmbedMultipleConfs
-from linux_qm.src.util import load_smiles3D, _create_tmp_dir, draw3Dconfs, SetPositions
+from linux_qm.src.util import load_smiles3D, _create_tmp_dir, draw3Dconfs
+from linux_qm.qm.driver import set_positions
 from linux_qm.qm.crest.crest import conformer_pipeline
 
 smi = 'COC1CN(C)C1'
