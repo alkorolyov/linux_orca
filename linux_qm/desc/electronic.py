@@ -16,14 +16,16 @@ from linux_qm.qm.orca.orca import OrcaDriver
 def orca_calculation(conf):
     orca = OrcaDriver()
 
-    orca.options['n_jobs'] = 1
+    orca.options['n_jobs'] = 8
 
     orca.options['method'] = 'XTB2'
     orca.geometry_optimization(conf)
 
-    orca.options['method'] = 'HF-3c'
+    # orca.options['method'] = 'HF-3c'
     # orca.options['method'] = 'BP86 def2-SVP def2/J D3BJ RIJCOSX'
-    data = orca.single_point(conf, calc_npa=False)
+    orca.options['method'] = 'BP86 def2-TZVP def2/J D3BJ RIJCOSX'
+    # data = orca.single_point(conf, calc_npa=False)
+    data = orca.geometry_optimization(conf, calc_npa=False)
 
     # data = orca.geometry_optimization(conf, calc_npa=True)
     return data
