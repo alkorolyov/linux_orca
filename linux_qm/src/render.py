@@ -1,4 +1,6 @@
 
+from rdkit import Chem
+from rdkit.Chem import Draw
 from rdkit.Chem import rdChemReactions
 from indigo import Indigo
 from indigo.renderer import IndigoRenderer
@@ -24,6 +26,24 @@ def draw_indigo_obj(obj, size=None):
             size = f"{size}, {size}"
         indigo.setOption("render-image-size", size)
     display(Image(renderer.renderToBuffer(obj)))
+
+
+def draw_multiple_smi(smiles_list: list, highlight_smi: str = None):
+    arr = indigo.createArray();
+    query = indigo.loadSmarts(highlight_smi)
+    for smi in smiles_list:
+        item = indigo.loadMolecule(smi);
+        match = indigo.substructureMatcher(item).match(query)
+        if match:
+            item = match.highlightedTarget()
+        arr.arrayAdd(item)
+
+    indigo.setOption("render-image-size", "-1, -1")
+    display(Image(renderer.renderGridToBuffer(arr, None, 4)))
+
+def draw_multiple_smi_rdkit(smiles_list: list):
+    mols = [Chem.MolFromSmiles(s) for s in smiles_list]
+    display(Draw.MolsToGridImage(mols, subImgSize=(300, 300)))
 
 
 def draw_reaction_smi(rxn_smi: str, highlight: list = None, product_only=False):

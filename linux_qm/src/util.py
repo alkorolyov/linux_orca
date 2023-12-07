@@ -1,3 +1,4 @@
+import logging
 import os
 from uuid import uuid4
 
@@ -5,6 +6,7 @@ from uuid import uuid4
 import py3Dmol
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdChemReactions
+from rdkit.Chem.MolStandardize import rdMolStandardize
 from indigo import Indigo
 indigo = Indigo()
 
@@ -18,9 +20,22 @@ def ind_rxn_map(rxn_smi):
         ind_rxn = indigo.loadReaction(rxn_smi)
         ind_rxn.automap("discard")
         return ind_rxn.smiles()
-    except:
-        return None
+    except Exception as e:
+        logging.warning(f'Failed to map reaction {rxn_smi}: {e}')
 
+
+def normalize(smi):
+    try:
+        mol = Chem.MolFromSmiles(smi)
+        lfc = rdMolStandardize.LargestFragmentChooser()
+        mol = lfc.choose(mol)
+        n = rdMolStandardize.Normalizer()
+        mol = n.normalize(mol)
+        u = rdMolStandardize.Uncharger()
+        mol = u.uncharge(mol)
+        return Chem.MolToSmiles(mol)
+    except Exception as e:
+        logging.warning(f'Failed to normalize smiles {smi}: {e}')
 
 def check_amide_mapping(rxn_smi):
     try:

@@ -6,8 +6,6 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdChemReactions
 
-
-
 def update_props(mol):
     mol.UpdatePropertyCache()
     Chem.GetSymmSSSR(mol)
@@ -47,4 +45,4 @@ def smarts_descriptor(rxn_smi, amine_queries: list, acid_queries: list):
     react_carbon = find_acid_carbon(acid, react_atoms_ids[1])
     amine_descr = match_queries(amine, amine_queries, react_nitrogen)
     acid_descr = match_queries(acid, acid_queries, react_carbon)
-    return np.hstack([amine_descr, acid_descr])
+    return amine_descr, acid_descr

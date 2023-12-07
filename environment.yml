@@ -9,6 +9,7 @@ dependencies:
   - dask
   - scikit-learn
   - scipy
+  - openpyxl
   # chemistry
   - rdkit
   - xtb

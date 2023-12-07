@@ -1,0 +1,65 @@
+SMARTS,Description
+"[NH2]",primary amine
+"[NX3;H1,H2]-[c]",N - aromatic carbon
+"[NX3;H1,H2]-[CH2]",N - CH2
+"[NX3;H1,H2]-[CH2]-[CH2]",N - (CH2)2
+"[NX3;H1,H2]-[CH2]-[CH2]-[CH2]",N - (CH2)3
+"[NX3;H1,H2]-[CH1]([*])[*]",N - izopropyl scaffold
+"[NX3;H1,H2]-[C]([*])([*])[*]",N - tert-butyl scaffold
+"[NX3;H1,H2]-[C]-[C]=,#[C]",CA - unsaturated bond
+"[NX3;H1,H2]-a1aaaa1",N - 5-membered aromatic ring
+"[NX3;H1,H2]-a1aaaaa1",N - 6-membered aromatic ring
+"[NX3;H1,H2]-[C]-[F,Cl]","N - C - F,Cl"
+"[NX3;H1,H2]-[C]-[Br,I]","N - C - Br,I"
+"[NX3;H1,H2]-[C](-O)",N - C - O
+"[NX3;H1,H2]-[C][NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)]",N - C - basic N
+"[NX3;H1,H2]-[C][NX3;$(NC=O),$(N(O)C=O),$(NS=O)]",N - C - amide N
+"[NX3;H1,H2]-[C]-[C]-[F,Cl,Br,I]",N - C - C - Hal
+"[NX3;H1,H2]-[C]-[C]-[O]",N - C -C - O
+"[NX3;H1,H2]-[C]-[C]-[NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)]",N - C - C- basic N
+"[NX3;H1,H2]-[C]-[C]-[NX3;$(NC=O),$(N(O)C=O),$(NS=O)]",N - C - C- amide N
+"[NX3;H1,H2]-a1aa(-[F,Cl])aa1","F,Cl in -meta position across 5-membered aromatic ring"
+"[NX3;H1,H2]-a1a(-[F,Cl])aaa1","F,Cl in -orto position across 5-membered aromatic ring"
+"[NX3;H1,H2]-a1aa(-[Br,I])aa1","Br,I in -meta position across 5-membered aromatic ring"
+"[NX3;H1,H2]-a1a(-[Br,I])aaa1","Br,I in -orto position across 5-membered aromatic ring"
+"[NX3;H1,H2]-a1aa(-[NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)])aa1",basic N in -meta position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)])aaa1",basic N in -orto position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[NX3;$(NC=O),$(N(O)C=O),$(NS=O)])aa1",amide N in -meta position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[NX3;$(NC=O),$(N(O)C=O),$(NS=O)])aaa1",amide N in -orto position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[O])aa1",O in -meta position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[O])aaa1",O in -orto position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[N+](=[O])-[O-])aa1",NO2 in -meta position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[N+](=[O])-[O-])aaa1",NO2 in -orto position across 5-membered aromatic ring
+"[NX3;H1,H2]-a1naaa1",N - alpha aromatic N in aromatic 5-membered aromatic ring
+"[NX3;H1,H2]-a1anaa1",N - beta aromatic N in aromatic 5-membered aromatic ring
+"[NX3;H1,H2]-a1oaaa1",N - alpha aromatic O in aromatic 5-membered aromatic ring
+"[NX3;H1,H2]-a1aoaa1",N - beta aromatic O in aromatic 5-membered aromatic ring
+"[NX3;H1,H2]-a1saaa1",N - alpha aromatic S in aromatic 5-membered aromatic ring
+"[NX3;H1,H2]-a1asaa1",N - beta aromatic S in aromatic 5-membered aromatic ring
+"[NX3;H1,H2]-a1aaa(-[F,Cl])aa1","F,Cl in -para position across 6-membered aromatic ring"
+"[NX3;H1,H2]-a1aa(-[F,Cl])aaa1","F,Cl in -meta position across 6-membered aromatic ring"
+"[NX3;H1,H2]-a1a(-[F,Cl])aaaa1","F,Cl in -orto position across 6-membered aromatic ring"
+"[NX3;H1,H2]-a1aaa(-[Br,I])aa1","Br,I in -para position across 6-membered aromatic ring"
+"[NX3;H1,H2]-a1aa(-[Br,I])aaa1","Br,I in -meta position across 6-membered aromatic ring"
+"[NX3;H1,H2]-a1a(-[Br,I])aaaa1","Br,I in -orto position across 6-membered aromatic ring"
+"[NX3;H1,H2]-a1aaa(-[CX3]=[OX1])aa1",carbonyl in -para position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[CX3]=[OX1])aaa1",carbonyl in -meta position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[CX3]=[OX1])aaaa1",carbonyl in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aaa(-[NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)])aa1",basic N in -para position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)])aaa1",N in -meta position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[NX3;!$(NC=O);!$(N(O)C=O);!$(N=O);!$(NS=O)])aaaa1",N in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aaa(-[NX3;$(NC=O),$(N(O)C=O),$(NS=O)])aa1",amide N in -para position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[NX3;$(NC=O),$(N(O)C=O),$(NS=O)])aaa1",amide N in -meta position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[NX3;$(NC=O),$(N(O)C=O),$(NS=O)])aaaa1",amide N in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aaa(-[O])aa1",O in -para position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[O])aaa1",O in -meta position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[O])aaaa1",O in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aaa(-[N+](=[O])-[O-])aa1",NO2 in -para position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1aa(-[N+](=[O])-[O-])aaa1",NO2 in -meta position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[N+](=[O])-[O-])aaaa1",NO2 in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1naaaa1",N - ortho aromatic N in aromatic 6-membered aromatic ring
+"[NX3;H1,H2]-a1anaaa1",N - meta aromatic N in aromatic 6-membered aromatic ring
+"[NX3;H1,H2]-a1aanaa1",N - para aromatic N in aromatic 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[*])aaaa1",any atom in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[*][*])aaaa1", * - * in -orto position across 6-membered aromatic ring
+"[NX3;H1,H2]-a1a(-[*]([*])[*])aaaa1", *-*(-*) in -orto position across 6-membered aromatic ring
