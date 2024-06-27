@@ -29,10 +29,10 @@ def draw_indigo_obj(obj, size=None):
 
 
 def draw_multiple_smi(smiles_list: list, highlight_smi: str = None):
-    arr = indigo.createArray();
+    arr = indigo.createArray()
     query = indigo.loadSmarts(highlight_smi)
     for smi in smiles_list:
-        item = indigo.loadMolecule(smi);
+        item = indigo.loadMolecule(smi)
         match = indigo.substructureMatcher(item).match(query)
         if match:
             item = match.highlightedTarget()

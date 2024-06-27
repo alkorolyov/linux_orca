@@ -10,28 +10,34 @@ import subprocess
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import rdchem
-from linux_qm.qm.driver import set_positions
+from linux_qm.src.util import set_atom_positions
 
+
+COORD = 'coord.xyz'
+INPUT = 'xtb.inp'
+TMP_ROOT = '.xtb_tmp'
 
 class XTBDriver:
     # default options
     options = {
-        'method': 'gfn2',
+        'method': 'gfn 2',
         'opt_geom': False,
+        'opt_level': 'normal',
+        'opt_engine': None,
+        'opt_maxiter': None,
+        'etemp': None,
+        'input': None,
+        'constrain': False,
         'solvent': None,
-        'geom_maxiter': 100,
         'n_jobs': 1,
     }
-    jobname: str = 'task'
 
     def __init__(
             self,
             options: dict = None,
             show_progress: bool = False,
-            tmp_root: str = '.xtb_tmp',
     ):
         self.options = {**self.options, **(options or {})}
-        self.tmp_root = tmp_root
 
     # Main methods
 
@@ -51,7 +57,7 @@ class XTBDriver:
         conf.SetBoolProp('success', success)
 
         if success:
-            # self.update_properties(conf, data)
+            self.update_properties(conf, data)
             logging.info(f'Success: {success}')
 
         return data
@@ -65,7 +71,6 @@ class XTBDriver:
         start = time()
         logging.info(f"Method: {self.options['method']}")
         self.options['opt_geom'] = True
-        self.options['calc_npa'] = calc_npa
 
         data = self.run(conf)
 
@@ -73,11 +78,18 @@ class XTBDriver:
         conf.SetBoolProp('success', success)
 
         if success:
-            # self.update_properties(conf, data)
+            self.update_properties(conf, data)
             self.update_geometry(conf, data)
+
+            num_iter = len(data.scfenergies)
+            elapsed = time() - start
+            time_per_iter = elapsed / num_iter
+
             logging.info(f'Success: {success}')
-            logging.info(f'Num Iter: {len(data.atomcoords)}')
-            logging.info(f'Elapsed Time: {time() - start:.1f}s')
+            logging.info(f'Num Iter: {num_iter}')
+            logging.info(f'Elapsed Time: {elapsed:.1f}s')
+            logging.info(f'Time per Iter: {time_per_iter:.1f}s')
+
 
         return data
 
@@ -91,41 +103,54 @@ class XTBDriver:
         :param conf: rdkit Conformer
         :return: cclib parsed data
         """
-        self._start_routine()
+        self._init()
 
-        input_str = self.gen_input(conf)
-        output = self.run_xtb(input_str)
+        self._write_input(conf)
+        output = self.run_xtb()
         data = self.parse(output)
-
-        self._end_routine()
+        self._clean()
 
         return data
 
-    def run_xtb(self, input_str):
+    def run_xtb(self):
         """
         Run xtb command line
         :param input_str:
         :return:
         """
-        self._write_input(input_str)
+        method = self.options['method']
+        opt = self.options['opt_geom']
+        level = self.options['opt_level']
+        maxiter = self.options['opt_maxiter']
+        inp = self.options['input']
+        etemp = self.options['etemp']
+        solv = self.options['solvent']
+        n_jobs = self.options['n_jobs']
 
-        _cmd = f"""xtb {xyz_name} --{method} --opt {crit} --cycles {maxiter} {"--input param.inp" if xtbinp else ""} -P {n_jobs}"""
-        # print(_cmd)
+        _cmd = f"""xtb {COORD} --{method} \
+        {"--input " + INPUT if inp else ""} \
+        {"--opt " + level if opt else ""} \
+        {"--cycles " + str(maxiter) if maxiter else ""} \
+        {"--alpb " + solv if solv else ""} \
+        {"--etemp " + str(etemp) if etemp else ""} \
+        -P {n_jobs} \
+        --verbose"""
+        _cmd = re.sub(' +', ' ', _cmd)
+
+        logging.debug(_cmd)
+
         res = subprocess.run(
             _cmd.split(' '),
             capture_output=True,
             text=True
         )
-        output, error = res.stdout, res.stderr
 
         if res.returncode != 0:
-            raise Exception(f'Error running orca: \nINPUT {input_str}\nSTDOUT: {output}\nSTDERR:{error}')
+            raise Exception(f'Error running xtb: \nINPUT {_cmd}\nSTDOUT: {res.stdout}\nSTDERR:{res.stderr}')
 
-        last_lines = '\n'.join(output.splitlines()[-10:])
-        logging.debug(f"ORCA OUTPUT:\n{last_lines}\n")
-        # logging.debug(output)
+        # logging.debug(res.stdout)
 
-        return output
+        return res.stdout
 
     def parse(self, output: str):
         """
@@ -134,22 +159,34 @@ class XTBDriver:
         :param output: output from the orca run.
         :return: cclib parsed data
         """
-        # with open('orca_output', 'w') as f:
-        #     f.write(output)
 
         data = cclib.io.ccread(io.StringIO(output))
 
-        logging.debug(f"CALC_NPA: {self.options['calc_npa']}")
+        if self.options['opt_geom']:
+            with open('xtbopt.xyz', 'r') as f:
+                xyz = f.read()
 
-        if self.options['calc_npa']:
-            data.atomcharges['npa'] = self.run_junpa(data)
-        # print(self.parse_janpa(res.stdout))
-        # logging.debug(repr(self.parse_janpa(res.stdout)))
+        # custom parse before cclib fix double letter elements
+        if xyz:
+            lines = xyz.split('\n')
+            match = re.search(r'energy:\s*(-?\d+\.\d+)', lines[1])
+            if match:
+                energy = float(match.group(1))
+                data.scfenergies = [energy]
+            atom_pos = []
+            for line in lines[2:]:
+                coords = re.findall('(-?\d+\.\d+)', line)
+                coords = [float(x) for x in coords]
+                if coords:
+                    atom_pos.append(coords)
+            data.atomcoords = [atom_pos]
 
         return data
 
+
     def update_geometry(self, conf, cclib_data):
-        set_positions(conf, cclib_data.atomcoords[-1])
+        set_atom_positions(conf, cclib_data.atomcoords[-1])
+
 
     def update_properties(self, conf, cclib_data):
         conf.SetDoubleProp('energy', cclib_data.scfenergies[-1])
@@ -159,26 +196,30 @@ class XTBDriver:
 
     def _create_tmp_dir(self):
         uid = str(uuid4())
-        self.tmp_dir = f"{self.tmp_root}/{uid}"
+        self.tmp_dir = f"{TMP_ROOT}/{uid}"
         os.makedirs(self.tmp_dir, exist_ok=True)
 
-    def _start_routine(self):
+    def _init(self):
         # save current dir
         self.saved_work_dir = os.getcwd()
         self._create_tmp_dir()
         os.chdir(self.tmp_dir)
 
-    def _end_routine(self):
+    def _clean(self):
         os.chdir(self.saved_work_dir)
         shutil.rmtree(self.tmp_dir)
 
-    def gen_input(self, conf: rdchem.Conformer):
-        xyz = Chem.MolToXYZBlock(conf)
+    def _write_input(self, conf: rdchem.Conformer):
+        conf_id = conf.GetId()
+        mol = conf.GetOwningMol()
+        xyz = Chem.MolToXYZBlock(mol, conf_id)
 
+        with open(COORD, 'w') as f:
+            f.write(xyz)
 
-    def _write_input(self, content: str):
-        with open(self.jobname + '.inp', 'w') as f:
-            f.write(content)
+        if self.options['input']:
+            with open(INPUT, 'w') as f:
+                f.write(self.options['input'])
     #
     # def write_output(self, content: str):
     #     fname = 'output'

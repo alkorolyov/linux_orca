@@ -5,7 +5,7 @@ import logging
 from time import time
 from rdkit.Chem import rdchem
 
-
+from linux_qm.src.util import set_atom_positions
 
 
 class _Driver:
@@ -91,7 +91,7 @@ class _Driver:
         raise NotImplementedError
 
     def update_geometry(self, conf, cclib_data):
-        set_positions(conf, cclib_data.atomcoords[-1])
+        set_atom_positions(conf, cclib_data.atomcoords[-1])
 
     def _create_tmp_dir(self):
         uid = str(uuid4())
@@ -112,22 +112,3 @@ class _Driver:
         shutil.rmtree(self.tmp_dir)
 
 
-def set_positions(conf, atom_positions):
-    """
-    Example usage:
-    atom_positions = [
-        [2.225, -0.136, -0.399],
-        [1.158, -0.319, 0.424],
-        [-0.050, 0.113, 0.042],
-        [ 0.178,-0.956, 0.329],
-    ]
-    conf = mol.GetConformer()
-    set_positions(conf, atom_positions)
-
-    conf: RDKit conformer
-    atom_positions: 2D array of x, y, z coordinates of each atom
-    """
-
-    for i in range(conf.GetNumAtoms()):
-        xyz = atom_positions[i]
-        conf.SetAtomPosition(i, xyz)

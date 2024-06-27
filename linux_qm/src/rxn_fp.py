@@ -267,7 +267,7 @@ class RxnFpGenerator:
         self._calc_init(rxn_smi)
         if self.calc_reags:
             self._calc_reag_fp()
-        if self.calc_layers and len(self.layers_shape) > 1:
+        if self.calc_layers and len(self.layewrs_shape) > 1:
             self._calc_layers_fp()
         return np.hstack([self.reag_fp, self.layers_fp])
 

@@ -9,7 +9,7 @@ import io
 import subprocess
 import numpy as np
 from rdkit.Chem import rdchem
-from linux_qm.qm.driver import set_positions
+from linux_qm.src.util import set_atom_positions
 
 """
 Main ORCA driver.
@@ -268,7 +268,7 @@ class OrcaDriver:
         return npa_charges
 
     def update_geometry(self, conf, cclib_data):
-        set_positions(conf, cclib_data.atomcoords[-1])
+        set_atom_positions(conf, cclib_data.atomcoords[-1])
 
     def update_properties(self, conf, cclib_data):
         conf.SetDoubleProp('energy', cclib_data.scfenergies[-1])

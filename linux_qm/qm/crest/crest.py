@@ -268,7 +268,7 @@ def conformer_screen(
         method: str = "gfn2",
         ewin: float = 6.0,
         n_jobs: int = 8,
-        verbose = False,
+        verbose: bool = False,
 ):
     """
     Any conformer ensemble present in a molecule is reoptimized with the selected method,
